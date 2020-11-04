@@ -5,7 +5,6 @@ default:
 	echo "\t + 'make install': create and install virtualenv"
 	echo "\t + 'make run': start the game"
 
-
 run:
 	./venv/bin/python3 main.py
 
