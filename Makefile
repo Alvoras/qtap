@@ -9,8 +9,7 @@ default:
 run:
 	./venv/bin/python3 main.py
 
-install:
-	pip install -r requirements.txt
+install: venv install_pip
 
 venv:
 	virtualenv venv --python=python3
