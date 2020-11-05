@@ -3,6 +3,9 @@ import threading
 from time import sleep
 
 from lib.bar import Bar
+from rich.console import Console
+
+from lib.constants import FRETS_COLOR_MAP
 
 
 class Sheet:
@@ -52,18 +55,26 @@ class Sheet:
 
     def make_tracks(self):
         lines = []
+        console = Console()
         for idx in range(self.height):
             # Within sheet bounds
             if self.cursor - (idx + 1) >= 0:
                 lines.append(f"│ {-((self.cursor - idx) - self.steps):03}{' ' * self.qbit_qty}")
-                for track in self.tracks:
+                for n, track in enumerate(self.tracks):
                     note = track[self.cursor - (idx + 1)]
-                    lines[idx] += f"{note.rstrip()} "
+                    color = FRETS_COLOR_MAP[n]
+                    with console.capture() as capture:
+                        if "-" not in note:
+                            console.print(f"[{color}]{note.rstrip()}[/{color}]", end="")
+                        else:
+                            console.print(note.rstrip(), end="")
 
-                lines[idx] += "│"
+                    lines[idx] += f"{capture.get()} "
             else:
                 # Out of sheet bounds, we want to print blank lines to allow the sheet to scroll to the bottom
                 lines.append(f"│ ---{' ' * self.qbit_qty}{(' ' * self.qbit_qty + ' ') * len(self.tracks)}│")
+
+            lines[idx] += "│"
 
         lines.reverse()
         return lines

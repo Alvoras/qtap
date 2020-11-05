@@ -6,11 +6,11 @@ from lib import culour
 
 from lib.sheet import Sheet
 from lib.keyboard import BreakMainLoop, handle_key
+import os
 
 
 def main(screen):
     curses.curs_set(0)
-    screen.keypad(0)
 
     box_padding = 2
 
@@ -26,12 +26,18 @@ def main(screen):
 
     screen.border(0)
     screen.nodelay(1)
+    screen.keypad(0)
     screen.timeout(int(sheet.bpm_delay * 1000))  # Millisecond
 
+    screen.idcok(False)
+    screen.idlok(False)
     while True:
+        # screen.erase()
         screen.clear()
         textpad.rectangle(screen, sheet_box[0][0], sheet_box[0][1], sheet_box[1][0], sheet_box[1][1])
         textpad.rectangle(screen, circuit_box[0][0], circuit_box[0][1], circuit_box[1][0], circuit_box[1][1])
+
+        curses.curs_set(0)
 
         for idx, line in enumerate(sheet.render()):
             left_sheet_padding = box_padding * 2 + (sheet.total_width // 2)
@@ -47,9 +53,13 @@ def main(screen):
 
         # culour.addstr(screen, (sh - box_padding) // 2, (sw // 3 - box_padding) // 2, str(sheet.cursor))
 
+        # screen.refresh()
         sheet.update_cursor()
         # Sleep for the remaining time if a key have been pressed ?
 
+
+os.putenv("TERM", "xterm-256color")
+curses.wrapper(main)
 
 # If a note is at the bottom of the screen, eval it
 # Eval : measure probabilities from circuit, get goal (00,01...) from probabilities in the measure_tracks pool
@@ -68,5 +78,3 @@ def main(screen):
 # Draw sheet
 # Draw frets
 # Draw circuit
-
-curses.wrapper(main)
