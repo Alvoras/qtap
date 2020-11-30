@@ -1,0 +1,9 @@
+---
+name: Doom
+author: MBR
+music_file: doom.mp3
+sheets:
+    easy: doom.qtap2
+    hard: doom.qtap3
+bpm: 230
+cover: cover.jpg

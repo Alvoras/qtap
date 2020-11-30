@@ -9,22 +9,15 @@ from lib.constants import FRETS_COLOR_MAP
 
 
 class Sheet:
-    sheets_dir = "sheets"
-    sheets_ext = ".qtap"
-
-    def __init__(self, qbit_qty, sheet_file, height=20, bpm=120):
-        self.qbit_qty = qbit_qty
-        self.bar = Bar(qbit_qty)
+    def __init__(self, song, height=20):
+        self.song = song
+        self.qbit_qty = 2 if self.song.mode == "easy" else 3
+        self.bar = Bar(self.qbit_qty)
 
         self.height = height+2
-        self.sheet_file = sheet_file
-
-        path = os.path.join(self.sheets_dir, self.sheet_file)
-        self.sheet_path = path + self.sheets_ext if not self.sheet_file.endswith(self.sheets_ext) else path
 
         # We're using no fraction (== 4/4)
-        self.bpm = bpm
-        self.bpm_delay = 1 / (self.bpm / 60)  # Delay in second between each beat (1 second / bpm / seconds in 1 minute)
+        self.bpm_delay = 1 / (self.song.bpm / 60)  # Delay in second between each beat (1 second / bpm / seconds in 1 minute)
 
         self.tracks = []
         for _ in self.bar.tracks_measure:
@@ -32,7 +25,7 @@ class Sheet:
 
         self.total_width = 5 + self.qbit_qty + self.bar.total_width + 2
 
-        with open(self.sheet_path) as f:
+        with open(self.song.sheet_file) as f:
             lines = f.readlines()
             lines.reverse()
             for line in lines:
@@ -48,10 +41,6 @@ class Sheet:
 
     def update_cursor(self):
         self.cursor -= 1
-
-    def start(self):
-        thread = threading.Thread(target=self.run)
-        thread.start()
 
     def make_tracks(self):
         lines = []
@@ -80,17 +69,9 @@ class Sheet:
         return lines
 
     def render(self):
-        os.system('cls' if os.name == 'nt' else 'clear')
         lines = self.make_tracks()
         lines += (self.bar.render())
         self.bar.update()
         lines = [line.replace("[1;", "[") for line in lines]
         return lines
         # return "\n".join(lines)
-
-    def run(self):
-        while self.cursor >= 0:
-            print(self.render())
-            self.cursor -= 1
-            sleep(self.bpm_delay)
-            # input()
