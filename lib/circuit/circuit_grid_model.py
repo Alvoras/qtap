@@ -26,12 +26,6 @@ class CircuitGridModel:
                             circuit_grid_node.ctrl_b,
                             circuit_grid_node.swap)
 
-        # TODO: Decide whether to protect as shown below
-        # if not self.nodes[wire_num][column_num]:
-        #     self.nodes[wire_num][column_num] = CircuitGridNode(node_type, radians)
-        # else:
-        #     print('Node ', wire_num, column_num, ' not empty')
-
     def get_node(self, wire_num, column_num):
         return self.nodes[wire_num][column_num]
 
@@ -64,10 +58,10 @@ class CircuitGridModel:
                 if other_node:
                     if other_node.ctrl_a == control_wire_num or \
                             other_node.ctrl_b == control_wire_num:
-                        gate_wire_num =  wire_idx
+                        gate_wire_num = wire_idx
                         print("Found gate: ",
                               self.get_node_gate_part(gate_wire_num, column_num),
-                              " on wire: " , gate_wire_num)
+                              " on wire: ", gate_wire_num)
         return gate_wire_num
 
     def compute_circuit(self):
@@ -159,7 +153,7 @@ class CircuitGridModel:
         # identity gate are displayed by completely transparent PNG
 
         for i in range(self.max_wires):
-            self.set_node(i, CIRCUIT_DEPTH - 1, CircuitGridNode(node_types.IDEN))
+            self.set_node(i, self.max_columns - 1, CircuitGridNode(node_types.IDEN))
 
 
 class CircuitGridNode:
