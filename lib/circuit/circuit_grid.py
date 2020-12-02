@@ -56,7 +56,6 @@ class CircuitGrid:
             self.circuit_grid_model.set_node(self.selected_wire, self.selected_column, circuit_grid_node)
         elif selected_node_gate_part == node_types.X:
             self.handle_input_delete()
-        self.update()
 
     def handle_input_y(self):
         selected_node_gate_part = self.get_selected_node_gate_part()
@@ -65,7 +64,6 @@ class CircuitGrid:
             self.circuit_grid_model.set_node(self.selected_wire, self.selected_column, circuit_grid_node)
         elif selected_node_gate_part == node_types.Y:
             self.handle_input_delete()
-        self.update()
 
     def handle_input_z(self):
         selected_node_gate_part = self.get_selected_node_gate_part()
@@ -74,7 +72,6 @@ class CircuitGrid:
             self.circuit_grid_model.set_node(self.selected_wire, self.selected_column, circuit_grid_node)
         elif selected_node_gate_part == node_types.Z:
             self.handle_input_delete()
-        self.update()
 
     def handle_input_h(self):
         selected_node_gate_part = self.get_selected_node_gate_part()
@@ -83,7 +80,6 @@ class CircuitGrid:
             self.circuit_grid_model.set_node(self.selected_wire, self.selected_column, circuit_grid_node)
         elif selected_node_gate_part == node_types.H:
             self.handle_input_delete()
-        self.update()
 
     def handle_input_delete(self):
         selected_node_gate_part = self.get_selected_node_gate_part()
@@ -106,11 +102,7 @@ class CircuitGrid:
             circuit_grid_node = CircuitGridNode(node_types.EMPTY)
             self.circuit_grid_model.set_node(self.selected_wire, self.selected_column, circuit_grid_node)
 
-        self.update()
-
     def handle_input_ctrl(self):
-        # TODO: Handle Toffoli gates. For now, control qubit is assumed to be in ctrl_a variable
-        #       with ctrl_b variable reserved for Toffoli gates
         selected_node_gate_part = self.get_selected_node_gate_part()
         if selected_node_gate_part == node_types.X or \
                 selected_node_gate_part == node_types.Y or \
@@ -130,15 +122,6 @@ class CircuitGrid:
                                                                   self.selected_column) == node_types.TRACE:
                         self.circuit_grid_model.set_node(wire_num, self.selected_column,
                                                          CircuitGridNode(node_types.EMPTY))
-                self.update()
-            else:
-                # Attempt to place a control qubit beginning with the wire above
-                if self.selected_wire >= 0:
-                    if self.place_ctrl_qubit(self.selected_wire, self.selected_wire - 1) == -1:
-                        if self.selected_wire < self.circuit_grid_model.max_wires:
-                            if self.place_ctrl_qubit(self.selected_wire, self.selected_wire + 1) == -1:
-                                print("Can't place control qubit")
-                                self.display_exceptional_condition()
 
     def handle_input_move_ctrl(self, direction):
         selected_node_gate_part = self.get_selected_node_gate_part()
@@ -170,7 +153,6 @@ class CircuitGrid:
                                                                           self.selected_column) == node_types.EMPTY:
                                 self.circuit_grid_model.set_node(candidate_wire_num - 1, self.selected_column,
                                                                  CircuitGridNode(node_types.TRACE))
-                        self.update()
                     else:
                         print("control qubit could not be placed on wire ", candidate_wire_num)
 
@@ -182,8 +164,6 @@ class CircuitGrid:
             circuit_grid_node = self.circuit_grid_model.get_node(self.selected_wire, self.selected_column)
             circuit_grid_node.radians = (circuit_grid_node.radians + radians) % (2 * np.pi)
             self.circuit_grid_model.set_node(self.selected_wire, self.selected_column, circuit_grid_node)
-
-        self.update()
 
     def place_ctrl_qubit(self, gate_wire_num, candidate_ctrl_wire_num):
         """Attempt to place a control qubit on a wire.
@@ -201,7 +181,6 @@ class CircuitGrid:
             self.circuit_grid_model.set_node(gate_wire_num, self.selected_column, circuit_grid_node)
             self.circuit_grid_model.set_node(candidate_ctrl_wire_num, self.selected_column,
                                              CircuitGridNode(node_types.EMPTY))
-            self.update()
             return candidate_ctrl_wire_num
         else:
             print("Can't place control qubit on wire: ", candidate_ctrl_wire_num)
@@ -226,8 +205,6 @@ class CircuitGrid:
             control_wire_num = control_b_wire_num
 
         if control_wire_num >= 0:
-            # TODO: If this is a controlled gate, remove the connecting TRACE parts between the gate and the control
-            # ALSO: Refactor with similar code in this method
             for wire_idx in range(min(gate_wire_num, control_wire_num),
                                   max(gate_wire_num, control_wire_num) + 1):
                 print("Replacing wire ", wire_idx, " in column ", column_num)
