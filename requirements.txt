@@ -11,7 +11,7 @@ crayons==0.4.0
 cryptography==3.2.1
 culour==0.1
 Cython==0.29.21
-dataclasses==0.7
+dataclasses==0.6
 decorator==4.4.2
 dill==0.3.3
 dlx==1.0.4
@@ -37,7 +37,6 @@ ntlm-auth==1.5.0
 numpy==1.19.4
 pandas==1.1.4
 Pillow==8.0.1
-pkg-resources==0.0.0
 playsound==1.2.2
 ply==3.11
 psutil==5.7.3
