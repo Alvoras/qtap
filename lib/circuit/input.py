@@ -1,6 +1,7 @@
 from lib.constants import MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT
 
-def handle_input(self, circuit, key):
+
+def handle_input(circuit, key):
     circuit_grid = circuit.circuit_grid
 
     # Left Arrow
