@@ -6,8 +6,10 @@ from lib.exceptions import BreakMainLoop, QuitGame
 from lib.constants import FPS
 
 from lib.sheet import Sheet, SheetFinished
+from lib.circuit.circuit import Circuit
 
 import time
+import lib.circuit.input as grid_input
 
 
 class Game:
@@ -31,6 +33,7 @@ class Game:
         screen_height, screen_width = screen.getmaxyx()
 
         sheet = Sheet(self.song, height=screen_height - box_padding * 4)
+        circuit = Circuit(sheet.qbit_qty)
 
         right_panel_left_padding = (screen_width // 3) + 1
         right_panel_right_padding = screen_width - 3
@@ -82,6 +85,7 @@ class Game:
             key = screen.getch()
 
             try:
+                grid_input.handle_input(circuit, key)
                 self.handle_key(key)
             except BreakMainLoop:
                 break
