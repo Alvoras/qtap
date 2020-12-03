@@ -64,7 +64,7 @@ class Menu:
         score_box = [[right_panel_left_padding, screen_height - score_box_height],
                      [right_panel_right_padding, screen_height - box_padding]]  # [[top_x, top_y], [bot_x, bot_y]]
 
-        sheet = Sheet(self.get_selected_song(), height=screen_height - box_padding * 4)
+        sheet = Sheet(self.get_selected_song(), demo=True, height=screen_height - box_padding * 4)
         screen.timeout(int(sheet.bpm_delay * 1000))  # Millisecond
         screen.idcok(True)
         screen.idlok(True)
@@ -72,7 +72,7 @@ class Menu:
 
         while True:
             if prev_cursor != self.cursor:
-                sheet = Sheet(self.get_selected_song(), height=screen_height - box_padding * 4)
+                sheet = Sheet(self.get_selected_song(), demo=True, height=screen_height - box_padding * 4)
             prev_cursor = self.cursor
             screen.timeout(int(sheet.bpm_delay * 1000))  # Millisecond
             start_ts = time.time()
@@ -90,17 +90,19 @@ class Menu:
             if cover:
                 for idx, line in enumerate(cover):
                     top_sheet_padding = box_padding + idx
-                    screen.addstr(top_sheet_padding, (screen_width - box_padding) - len(cover) - box_padding, line)
+                    screen.addstr(top_sheet_padding, (screen_width - box_padding) - (len(cover) * 2) - box_padding, line)
 
             for idx, line in enumerate(self.render_selected_song_meta()):
                 top_sheet_padding = box_padding + idx
                 culour.addstr(screen, top_sheet_padding, right_panel_left_padding + box_padding, line)
 
-            for idx, line in enumerate(sheet.render()):
-                left_sheet_padding = (box_padding * 2 + ((screen_height - box_padding) - sheet.total_width) // 2) + 1
+            for idx, line in enumerate(sheet.render_demo()):
+                if sheet.demo_screen_done:
+                    left_sheet_padding = (box_padding * 2 + ((screen_height - box_padding) - sheet.total_width) // 2) + 1
+                else:
+                    left_sheet_padding = (box_padding * 2 + ((screen_height - box_padding) - 43) // 2) + 4
                 top_sheet_padding = box_padding + idx
                 culour.addstr(screen, top_sheet_padding, left_sheet_padding, line)
-                screen.refresh()
 
             screen.refresh()
 
@@ -156,7 +158,9 @@ class Menu:
         return lines
 
     def get_selected_song_cover(self):
-        return self.get_selected_song().cover.splitlines()
+        lines = self.get_selected_song().cover.splitlines()
+
+        return [" ".join(c for c in line) for line in lines]
 
     def get_selected_song(self):
         return self.songs[self.cursor]

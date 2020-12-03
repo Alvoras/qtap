@@ -33,11 +33,11 @@ class Song:
 
             self.bpm = meta["bpm"]
             self.cover_path = os.path.join(songs_root, meta.get("cover"))
+            # self.cover_width = ((width // 3) // 2) + 1
             self.cover_width = ((width // 3) // 2) + 1
 
             if self.cover_path:
                 try:
-                    image = Image.open(self.cover_path)
-                    self.cover = asciify.to_ascii(image, new_width=self.cover_width)
+                    self.cover = asciify.to_ascii(self.cover_path, new_width=self.cover_width)
                 except FileNotFoundError:
                     print("Unable to find image in", self.cover_path)

@@ -60,7 +60,12 @@ class Game:
             textpad.rectangle(screen, score_box[0][1], score_box[0][0], score_box[1][1], score_box[1][0])
 
             for idx, line in enumerate(sheet.render()):
-                left_sheet_padding = (box_padding * 2 + ((screen_height - box_padding) - sheet.total_width) // 2) + 1
+                if sheet.get_ready_done:
+                    left_sheet_padding = (box_padding * 2 + ((screen_height - box_padding) - sheet.total_width) // 2) + 1
+                else:
+                    left_sheet_padding = (box_padding * 2 + ((screen_height - box_padding) - len(line)) // 2) + 4
+
+                # left_sheet_padding = (box_padding * 2 + ((screen_height - box_padding) - sheet.total_width) // 2) + 1
                 top_sheet_padding = box_padding + idx
                 culour.addstr(screen, top_sheet_padding, left_sheet_padding, line)
                 screen.refresh()

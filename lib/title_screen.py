@@ -1,3 +1,6 @@
+import sys
+import time
+
 from asciimatics.renderers import FigletText, Fire, Rainbow
 from asciimatics.scene import Scene
 from asciimatics.screen import Screen

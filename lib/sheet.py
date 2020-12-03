@@ -1,6 +1,5 @@
-import os
-import threading
-from time import sleep
+import time
+from pyfiglet import Figlet
 
 from lib.bar import Bar
 from rich.console import Console
@@ -9,8 +8,17 @@ from lib.constants import FRETS_COLOR_MAP
 
 
 class Sheet:
-    def __init__(self, song, height=20):
+    def __init__(self, song, demo=False, height=20):
         self.song = song
+
+        self.demo = demo
+        self.demo_start_ts = None
+        self.demo_screen_done = False
+        self.demo_counter = 0
+
+        self.get_ready_done = False
+        self.get_ready_counter = -4
+
         self.qbit_qty = 2 if self.song.mode == "easy" else 3
         self.bar = Bar(self.qbit_qty)
 
@@ -37,10 +45,12 @@ class Sheet:
 
         self.steps = len(self.tracks[0])
         self.cursor = self.steps
-        # self.cursor = 0
 
     def update_cursor(self):
-        self.cursor -= 1
+        if self.demo and self.demo_screen_done:
+            self.cursor -= 1
+        elif self.get_ready_done:
+            self.cursor -= 1
 
     def make_tracks(self):
         lines = []
@@ -69,9 +79,50 @@ class Sheet:
         return lines
 
     def render(self):
+        if not self.demo:
+            max_frames = 15
+            get_ready_period = 3
+            half_text_height = 8 // 2
+
+            get_ready_number = Figlet(font="banner").renderText(str(abs(self.get_ready_counter - max_frames)//get_ready_period - 1)).splitlines()
+            if not self.get_ready_done and self.get_ready_counter < max_frames + get_ready_period:
+                self.get_ready_counter += 1
+                if self.get_ready_counter > max_frames - get_ready_period:
+                    get_ready_number = Figlet(font="banner").renderText("GO!").splitlines()
+                if self.get_ready_counter > max_frames:
+                    self.get_ready_done = True
+
+                for i in range((self.height//2) - half_text_height):
+                    get_ready_number.insert(0, "")
+
+                return get_ready_number
+
         lines = self.make_tracks()
         lines += (self.bar.render())
         self.bar.update()
         lines = [line.replace("[1;", "[") for line in lines]
         return lines
-        # return "\n".join(lines)
+
+    def render_demo(self):
+        if not self.demo_start_ts:
+            self.demo_start_ts = time.time()
+        else:
+            if time.time() - self.demo_start_ts >= 1:
+                self.demo_screen_done = True
+            # elif self.demo_counter < 6:
+            #     self.demo_counter += 1
+
+        demo_lines = f""" /$$$$$$$  /$$$$$$$$ /$$      /$$  /$$$$$$ 
+| $$__  $$| $$_____/| $$$    /$$$ /$$__  $$
+| $$  \ $$| $$      | $$$$  /$$$$| $$  \ $$
+| $$  | $$| $$$$$   | $$ $$/$$ $$| $$  | $$
+| $$  | $$| $$__/   | $$  $$$| $$| $$  | $$
+| $$  | $$| $$      | $$\  $ | $$| $$  | $$
+| $$$$$$$/| $$$$$$$$| $$ \/  | $$|  $$$$$$/
+|_______/ |________/|__/     |__/ \______/ 
+""".splitlines()
+
+        # for i in range(((self.height//2) - 4) - self.demo_counter//2):
+        for i in range(((self.height//2) - 4) - self.demo_counter//2):
+            demo_lines.insert(0, "")
+        return self.render() if self.demo_screen_done else demo_lines

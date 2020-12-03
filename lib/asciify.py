@@ -1,4 +1,5 @@
 from PIL import Image
+import PIL.ImageOps
 
 ASCII_CHARS = ['.', ',', ':', ';', '+', '*', '?', '%', 'S', '#', '@']
 ASCII_CHARS = ASCII_CHARS[::-1]
@@ -48,9 +49,11 @@ method to_ascii():
 '''
 
 
-def to_ascii(image, new_width=100):
+def to_ascii(image_path, new_width=100):
+    image = Image.open(image_path)
     image = resize(image, new_width=new_width)
     image = grayscalify(image)
+    image = PIL.ImageOps.invert(image)
 
     pixels = modify(image)
     len_pixels = len(pixels)
