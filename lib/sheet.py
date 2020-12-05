@@ -79,6 +79,26 @@ class Sheet:
             self.cursor -= 1
             self.check_end()
 
+    def has_value_to_compare(self):
+        if self.cursor >= len(self.tracks[0]):
+            return False
+
+        for i in range(len(self.tracks)):
+            if self.tracks[i][self.cursor] != "--":
+                return True
+
+        return False
+
+    def compare(self, measured):
+        if self.cursor >= len(self.tracks[0]):
+            return 0
+
+        for i in range(len(self.tracks)):
+            if measured == self.tracks[i][self.cursor]:
+                return 1
+
+        return 0
+
     def make_tracks(self):
         lines = []
         for idx in range(self.height):

@@ -79,6 +79,14 @@ class Game:
                 top_sheet_padding = box_padding + idx
                 culour.addstr(screen, top_sheet_padding, left_sheet_padding, line)
 
+            # Build circuit graphics line by line
+            # for idx, line in enumerate(circuit.render()):
+            #     left_sheet_padding = (box_padding * 2 + (
+            #                 (screen_height - box_padding) - sheet.total_width) // 2) + 1
+            #
+            #     top_sheet_padding = box_padding + idx
+            #     culour.addstr(screen, top_sheet_padding, left_sheet_padding, line)
+
             # Flush built graphics to screen
             screen.refresh()
 
@@ -93,6 +101,10 @@ class Game:
             # If the time delta between last loop and now is more than the BPM's delay, then forward the sheet
             if sheet.tick():
                 try:
+                    if sheet.has_value_to_compare():
+                        measured = circuit.measure()
+                        self.score += sheet.compare(measured)
+
                     sheet.update_cursor()
                 except SheetFinished:
                     raise

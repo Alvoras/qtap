@@ -10,6 +10,7 @@ from copy import deepcopy
 class Circuit:
     def __init__(self, qbit_qty):
         self.qbit_qty = qbit_qty
+        self.get_ready_done = False
         self.circuit_grid_model = CircuitGridModel(self.qbit_qty, MAX_COLUMNS)
         self.circuit_grid = CircuitGrid(self.qbit_qty, MAX_COLUMNS, self.circuit_grid_model)
 
@@ -40,6 +41,6 @@ class Circuit:
         result_sim = job_sim.result()
         counts = result_sim.get_counts(circuit)
 
-        print(counts)
+        # TODO : Clean array
 
-        return int(list(counts.keys())[0], 2)
+        return list(counts.keys())[0]
