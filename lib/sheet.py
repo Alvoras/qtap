@@ -6,7 +6,6 @@ from colorama import Style
 from rich.console import Console
 
 from lib.constants import FRETS_COLOR_MAP
-from lib.exceptions import SheetFinished
 
 
 class Sheet:
@@ -26,7 +25,10 @@ class Sheet:
         self.qbit_qty = 2 if self.song.mode == "easy" else 3
         self.bar = Bar(self.qbit_qty)
 
+        self.render_buf = []
+
         self.height = height+2
+        self.padding_height = (self.height//4) * 3
 
         # We're using no fraction (== 4/4)
         self.bpm_delay = 1 / (self.song.bpm / 60)  # Delay in second between each beat (1 second / bpm / seconds in 1 minute)
@@ -36,9 +38,13 @@ class Sheet:
             self.tracks.append([])
 
         self.total_width = 5 + self.qbit_qty + self.bar.total_width + 2
+        empty_line = " ".join("-" * self.qbit_qty for _ in range(self.bar.tracks_qty))
 
         with open(self.song.sheet_file) as f:
             lines = f.readlines()
+            for _ in range(self.padding_height):
+                lines.insert(0, empty_line)
+
             lines.reverse()
             for line in lines:
                 if line.startswith("#"):
@@ -49,6 +55,7 @@ class Sheet:
 
         self.steps = len(self.tracks[0])
         self.cursor = self.steps
+        self.prev_cursor = 0
 
     def ts(self):
         self.start_ts = time.time()
@@ -61,8 +68,8 @@ class Sheet:
         return False
 
     def check_end(self):
-        if self.cursor < (0 - self.height):
-            raise SheetFinished
+        if self.cursor < 0:
+            self.signal_finished()
 
     def update_cursor(self):
         if self.demo and self.demo_screen_done:
@@ -74,11 +81,13 @@ class Sheet:
 
     def make_tracks(self):
         lines = []
-        console = Console()
         for idx in range(self.height):
             # Within sheet bounds
             if self.cursor - (idx + 1) >= 0:
-                lines.append(f"│ {-((self.cursor - idx) - self.steps):03}{' ' * self.qbit_qty}")
+                if self.cursor - (idx + 1) > self.steps - self.padding_height:
+                    lines.append(f"│ ---{' ' * self.qbit_qty}")
+                else:
+                    lines.append(f"│ {-((self.cursor - idx) - (self.steps - (self.padding_height - 1))):03}{' ' * self.qbit_qty}")
                 for n, track in enumerate(self.tracks):
                     note = track[self.cursor - (idx + 1)]
                     color = FRETS_COLOR_MAP[n]
@@ -86,7 +95,7 @@ class Sheet:
                     lines[idx] += " "
             else:
                 # Out of sheet bounds, we want to print blank lines to allow the sheet to scroll to the bottom
-                lines.append(f"│ ---{' ' * self.qbit_qty}{(' ' * self.qbit_qty + ' ') * len(self.tracks)}│")
+                lines.append(f"│ ---{' ' * self.qbit_qty}{(' ' * self.qbit_qty + ' ') * len(self.tracks)}")
 
             lines[idx] += "│"
 
@@ -94,6 +103,8 @@ class Sheet:
         return lines
 
     def render(self):
+        if self.cursor == self.prev_cursor:
+            return self.render_buf
         if not self.demo:
             # Total duration of the countdown screen in frame
             max_frames = 90
@@ -119,7 +130,10 @@ class Sheet:
         lines = self.make_tracks()
         lines += (self.bar.render())
         self.bar.update()
-        lines = [line.replace("[1;", "[") for line in lines]
+
+        self.render_buf = lines
+        self.prev_cursor = self.cursor
+
         return lines
 
     def render_demo(self):
@@ -145,3 +159,15 @@ class Sheet:
         for i in range(((self.height//2) - 4) - self.demo_counter//2):
             demo_lines.insert(0, "")
         return self.render() if self.demo_screen_done else demo_lines
+
+    def signal_finished(self):
+        raise(SheetFinished(self))
+
+
+class SheetFinished(Exception):
+    def __init__(self, sheet):
+        super(SheetFinished, self).__init__()
+        self.sheet = sheet
+
+    def get_sheet(self):
+        return self.sheet if self.sheet else None

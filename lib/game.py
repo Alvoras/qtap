@@ -2,10 +2,10 @@ import curses
 from curses import textpad
 
 from lib import culour
-from lib.exceptions import BreakMainLoop, SheetFinished, QuitGame
+from lib.exceptions import BreakMainLoop, QuitGame
 from lib.constants import FPS
 
-from lib.sheet import Sheet
+from lib.sheet import Sheet, SheetFinished
 
 import time
 
@@ -15,6 +15,7 @@ class Game:
         self.song = song
         self.start_ts = time.time()
         self.stop_ts = 0
+        self.score = 10
 
     def start(self):
         curses.wrapper(self.run)
@@ -51,7 +52,7 @@ class Game:
                      [right_panel_right_padding, screen_height - box_padding]]  # [[top_x, top_y], [bot_x, bot_y]]
 
         screen.idcok(True)
-        screen.idlok(True)
+        # screen.idlok(True)
 
         screen.timeout(int(1 / FPS * 1000))  # Millisecond
         sheet.ts()
@@ -90,8 +91,7 @@ class Game:
                 try:
                     sheet.update_cursor()
                 except SheetFinished:
-                    pass
-    #               goto end game
+                    raise
 
     def handle_key(self, key):
         if key > -1:

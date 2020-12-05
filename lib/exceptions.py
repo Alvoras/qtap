@@ -14,9 +14,5 @@ class MissingSongSheet(Exception):
     pass
 
 
-class SheetFinished(Exception):
-    pass
-
-
 class QuitGame(Exception):
     pass

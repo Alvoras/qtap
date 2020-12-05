@@ -1,17 +1,20 @@
 #!/bin/env python3
 import os
 
-from lib.exceptions import SheetFinished, QuitGame
+from lib.exceptions import QuitGame
 from lib.game import Game
+from lib.sheet import SheetFinished
 from colorama import init, deinit
 
 from lib.menu import Menu,SongSelected
 from lib.title_screen import show_title_screen
+from lib.finish_screen import show_finish_screen
 
 os.putenv("TERM", "xterm-256color")
-init()
 
 show_title_screen()
+
+init()
 menu = Menu()
 
 while True:
@@ -25,7 +28,7 @@ while True:
     try:
         game.start()
     except SheetFinished:
-        pass
+        show_finish_screen(game)
         # Show end screen
     except QuitGame:
         break
