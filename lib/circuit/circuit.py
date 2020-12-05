@@ -53,9 +53,11 @@ class Circuit:
                 #     c = "▆"
 
                 left_padding = (col*((self.width)//MAX_COLUMNS)) + (self.width//MAX_COLUMNS)//2
-                lines[offset] = lines[offset][:left_padding] + c + lines[offset][left_padding+1:]
+                lines[offset] = lines[offset][:left_padding - 1] + c + lines[offset][left_padding+2:]
 
-        lines = self.draw_cursor(lines,  self.circuit_grid.selected_wire, self.circuit_grid.selected_column)
+        lines.append(" " * self.width)
+
+        lines = self.draw_cursor(lines)
 
         return lines
 
@@ -66,14 +68,22 @@ class Circuit:
 
         gate = self.render_gate(self.circuit_grid.selected_wire, self.circuit_grid.selected_column)
         cursor = [
-            "╭─ ─╮",
+            "╰─ ─╯",
             f"  {gate}  ",
-            "╰─ ─╯"
+            "╭─ ─╮"
         ]
 
+        # lines[offset] = lines[offset][:left_padding - 2] + cursor[1] + lines[offset][left_padding+3:]
+
         for idx, line in enumerate(cursor):
+            cursor_line_size = len(cursor[idx]) // 2
+            cursor_height_size = len(cursor) // 2
+            cursor_offset_y = offset - (idx - cursor_height_size)
+
+            lines[cursor_offset_y] = lines[cursor_offset_y][:left_padding - cursor_line_size] + \
+                cursor[idx] + lines[cursor_offset_y][left_padding + cursor_line_size + 1:]
             # offset = y - (idx-1)
-            self.replacer(lines[offset-(idx-1)], line, left_padding - (idx-2))
+            # self.replacer(lines[offset-(idx-1)], line, left_padding - (idx-2))
             # lines[offset] = lines[offset][:y-idx-2] + gate + lines[offset][y+idx-2:]
 
         return lines
@@ -93,12 +103,13 @@ class Circuit:
         return s[:index] + newstring + s[index + 1:]
 
     def render_gate(self, x, y):
-        c = "▆"
+        # need 3 character for rendering gate
+        c = " ▆ "
         gate = self.circuit_grid_model.get_node_gate_part(x, y)
         if gate == NODE_TYPES.EMPTY:
             pass
         elif gate == NODE_TYPES.H:
-            c = "H"
+            c = " H "
 
         return c
 
