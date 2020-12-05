@@ -54,6 +54,8 @@ class Game:
         score_box = [[right_panel_left_padding, (screen_height - score_box_height)],
                      [right_panel_right_padding, screen_height - box_padding]]  # [[top_x, top_y], [bot_x, bot_y]]
 
+        song_author_str = "Chanson en cours : " + sheet.song.name + " - " + sheet.song.author
+
         screen.idcok(True)
         # screen.idlok(True)
 
@@ -68,6 +70,11 @@ class Game:
             textpad.rectangle(screen, sheet_box[0][1], sheet_box[0][0], sheet_box[1][1], sheet_box[1][0])
             textpad.rectangle(screen, circuit_box[0][1], circuit_box[0][0], circuit_box[1][1], circuit_box[1][0])
             textpad.rectangle(screen, score_box[0][1], score_box[0][0], score_box[1][1], score_box[1][0])
+
+            top_sheet_padding_score = (screen_height - score_box_height) + 1
+            culour.addstr(screen, top_sheet_padding_score, right_panel_left_padding + box_padding, song_author_str)
+            culour.addstr(screen, top_sheet_padding_score + 1, right_panel_left_padding + box_padding,
+                          "Score : " + str(self.score))
 
             # Build sheet graphics line by line
             for idx, line in enumerate(sheet.render()):
