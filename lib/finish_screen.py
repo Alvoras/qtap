@@ -59,7 +59,7 @@ def animate(screen, game):
     # buttons_top_padding = screen.height - (screen.height // 3)
     #
 
-    score_top_padding = (screen.height // 3) * 2
+    score_top_padding = ((screen.height // 3) * 2) - 3
 
     effects = [
         # Print(screen,

@@ -17,7 +17,7 @@ class Sheet:
         self.demo = demo
         self.demo_start_ts = None
         self.demo_screen_done = False
-        self.demo_counter = 0
+        # self.demo_counter = 0
 
         self.get_ready_done = False
         self.get_ready_counter = -4
@@ -69,11 +69,15 @@ class Sheet:
 
     def check_end(self):
         if self.cursor < 0:
-            self.signal_finished()
+            if self.demo:
+                self.cursor = self.steps
+            else:
+                self.signal_finished()
 
     def update_cursor(self):
         if self.demo and self.demo_screen_done:
             self.cursor -= 1
+            self.demo_screen_done = False
             self.check_end()
         elif self.get_ready_done:
             self.cursor -= 1
@@ -176,7 +180,7 @@ class Sheet:
 """.splitlines()
 
         # for i in range(((self.height//2) - 4) - self.demo_counter//2):
-        for i in range(((self.height//2) - 4) - self.demo_counter//2):
+        for i in range(((self.height//2) - 4)):
             demo_lines.insert(0, "")
         return self.render() if self.demo_screen_done else demo_lines
 

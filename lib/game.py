@@ -17,7 +17,7 @@ class Game:
         self.song = song
         self.start_ts = time.time()
         self.stop_ts = 0
-        self.score = 10
+        self.score = 0
 
     def start(self):
         curses.wrapper(self.run)
@@ -31,12 +31,13 @@ class Game:
         score_box_height = 10
 
         screen_height, screen_width = screen.getmaxyx()
-
-        sheet = Sheet(self.song, height=screen_height - box_padding * 4)
-        circuit = Circuit(sheet.qbit_qty)
-
         right_panel_left_padding = (screen_width // 3) + 1
         right_panel_right_padding = screen_width - 3
+
+        sheet = Sheet(self.song, height=screen_height - box_padding * 4)
+        circuit = Circuit(sheet.qbit_qty,
+                          height=(screen_height - score_box_height) - box_padding,
+                          width=((screen_width - box_padding) - ((box_padding * 2)+ right_panel_left_padding)))
 
         # Starts at 0,0 (top - left) :
         # ===
@@ -51,7 +52,7 @@ class Game:
         circuit_box = [[right_panel_left_padding, 1],
                        [right_panel_right_padding, screen_height - score_box_height]]  # [[top_x, top_y], [bot_x, bot_y]]
 
-        score_box = [[right_panel_left_padding, (screen_height - score_box_height)],
+        score_box = [[right_panel_left_padding, screen_height - score_box_height],
                      [right_panel_right_padding, screen_height - box_padding]]  # [[top_x, top_y], [bot_x, bot_y]]
 
         song_author_str = "Chanson en cours : " + sheet.song.name + " - " + sheet.song.author
@@ -87,15 +88,13 @@ class Game:
                 culour.addstr(screen, top_sheet_padding, left_sheet_padding, line)
 
             # Build circuit graphics line by line
-            # for idx, line in enumerate(circuit.render()):
-            #     left_sheet_padding = (box_padding * 2 + (
-            #                 (screen_height - box_padding) - sheet.total_width) // 2) + 1
-            #
-            #     top_sheet_padding = box_padding + idx
-            #     culour.addstr(screen, top_sheet_padding, left_sheet_padding, line)
+            for idx, line in enumerate(circuit.render()):
+                left_sheet_padding = box_padding + right_panel_left_padding
+                top_sheet_padding = box_padding + idx
+                culour.addstr(screen, top_sheet_padding, left_sheet_padding, line)
 
             # Flush built graphics to screen
-            screen.refresh()
+            # screen.refresh()
 
             key = screen.getch()
 

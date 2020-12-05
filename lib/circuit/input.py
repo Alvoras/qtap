@@ -31,7 +31,7 @@ def handle_input(circuit, key):
         circuit_grid.handle_input_y()
         circuit.render()
 
-    elif key == ord("w"):
+    elif key == ord("z"):
         circuit_grid.handle_input_z()
         circuit.render()
 
@@ -49,7 +49,7 @@ def handle_input(circuit, key):
         circuit_grid.handle_input_ctrl()
         circuit.render()
 
-    elif key == ord("q"):
+    elif key == ord("w"):
         # Move a control qubit up
         circuit_grid.handle_input_move_ctrl(MOVE_UP)
         circuit.render()
