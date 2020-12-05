@@ -2,14 +2,18 @@ import time
 from pyfiglet import Figlet
 
 from lib.bar import Bar
+from colorama import Style
 from rich.console import Console
 
 from lib.constants import FRETS_COLOR_MAP
+from lib.exceptions import SheetFinished
 
 
 class Sheet:
     def __init__(self, song, demo=False, height=20):
         self.song = song
+
+        self.start_ts = 0
 
         self.demo = demo
         self.demo_start_ts = None
@@ -46,11 +50,27 @@ class Sheet:
         self.steps = len(self.tracks[0])
         self.cursor = self.steps
 
+    def ts(self):
+        self.start_ts = time.time()
+
+    def tick(self):
+        if time.time() - self.start_ts >= self.bpm_delay:
+            self.ts()
+            return True
+
+        return False
+
+    def check_end(self):
+        if self.cursor < (0 - self.height):
+            raise SheetFinished
+
     def update_cursor(self):
         if self.demo and self.demo_screen_done:
             self.cursor -= 1
+            self.check_end()
         elif self.get_ready_done:
             self.cursor -= 1
+            self.check_end()
 
     def make_tracks(self):
         lines = []
@@ -62,13 +82,8 @@ class Sheet:
                 for n, track in enumerate(self.tracks):
                     note = track[self.cursor - (idx + 1)]
                     color = FRETS_COLOR_MAP[n]
-                    with console.capture() as capture:
-                        if "-" not in note:
-                            console.print(f"[{color}]{note.rstrip()}[/{color}]", end="")
-                        else:
-                            console.print(note.rstrip(), end="")
-
-                    lines[idx] += f"{capture.get()} "
+                    lines[idx] += f"{color}{note.rstrip()}{Style.RESET_ALL}" if "-" not in note else note.rstrip()
+                    lines[idx] += " "
             else:
                 # Out of sheet bounds, we want to print blank lines to allow the sheet to scroll to the bottom
                 lines.append(f"│ ---{' ' * self.qbit_qty}{(' ' * self.qbit_qty + ' ') * len(self.tracks)}│")
@@ -80,8 +95,12 @@ class Sheet:
 
     def render(self):
         if not self.demo:
-            max_frames = 15
-            get_ready_period = 3
+            # Total duration of the countdown screen in frame
+            max_frames = 90
+            # Duration of one count in frame
+            get_ready_period = 15
+            # 90/15 = 6 steps in the countdown : 5,4,3,2,1,0
+
             half_text_height = 8 // 2
 
             get_ready_number = Figlet(font="banner").renderText(str(abs(self.get_ready_counter - max_frames)//get_ready_period - 1)).splitlines()

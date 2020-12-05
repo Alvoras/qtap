@@ -1,4 +1,4 @@
-from rich.console import Console
+from colorama import Style
 
 from lib.constants import FRETS_COLOR_MAP
 
@@ -15,25 +15,17 @@ class Bar:
 
     def make_frets(self):
         frets = []
-        console = Console()
         for idx in range(self.tracks_qty):
             color = FRETS_COLOR_MAP[idx]
-            with console.capture() as capture:
-                console.print(f"[bold {color}]{'═' * self.qbit_qty}[/bold {color}] ", end="")
-
-            frets.append(capture.get())
+            frets.append(f"{Style.BRIGHT}{color}{'═' * self.qbit_qty}{Style.RESET_ALL} ")
 
         return frets
 
     def make_track_ref(self):
         track_ref = []
-        console = Console()
         for idx in range(self.tracks_qty):
             color = FRETS_COLOR_MAP[idx]
-            with console.capture() as capture:
-                console.print(f"[{color}]{self.tracks_measure[idx]}[/{color}] ", end="")
-
-            track_ref.append(capture.get())
+            track_ref.append(f"{Style.BRIGHT}{color}{self.tracks_measure[idx]}{Style.RESET_ALL} ")
 
         return track_ref
 

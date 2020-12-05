@@ -1,24 +1,37 @@
 #!/bin/env python3
 import os
 
+from lib.exceptions import SheetFinished, QuitGame
 from lib.game import Game
+from colorama import init, deinit
 
-from lib.menu import Menu,SongSelected, Quit
+from lib.menu import Menu,SongSelected
 from lib.title_screen import show_title_screen
 
 os.putenv("TERM", "xterm-256color")
+init()
 
 show_title_screen()
 menu = Menu()
 
-try:
-    menu.start()
-except SongSelected as song_exc:
-    game = Game(song_exc.get_song())
-except Quit:
-    exit(0)
+while True:
+    try:
+        menu.start()
+    except SongSelected as song_exc:
+        game = Game(song_exc.get_song())
+    except QuitGame:
+        break
 
-game.start()
+    try:
+        game.start()
+    except SheetFinished:
+        pass
+        # Show end screen
+    except QuitGame:
+        break
+
+deinit()
+
 # sheet_file = "demo_3"
 # sheet = Sheet(3, sheet_file, bpm=1)
 

@@ -2,10 +2,10 @@ import curses
 import os
 from curses import textpad
 from rich.console import Console
-import time
 
 from lib import culour
-from lib.exceptions import BreakMainLoop, UnsupportedDifficultyMode, MissingSongSheet
+from lib.constants import FPS
+from lib.exceptions import BreakMainLoop, UnsupportedDifficultyMode, MissingSongSheet, QuitGame
 from lib.sheet import Sheet
 from lib.song import Song
 
@@ -64,18 +64,20 @@ class Menu:
         score_box = [[right_panel_left_padding, screen_height - score_box_height],
                      [right_panel_right_padding, screen_height - box_padding]]  # [[top_x, top_y], [bot_x, bot_y]]
 
-        sheet = Sheet(self.get_selected_song(), demo=True, height=screen_height - box_padding * 4)
-        screen.timeout(int(sheet.bpm_delay * 1000))  # Millisecond
         screen.idcok(True)
         screen.idlok(True)
+
+        sheet = Sheet(self.get_selected_song(), demo=True, height=screen_height - box_padding * 4)
         prev_cursor = self.cursor
+
+        sheet.ts()
+        screen.timeout(int(1 / FPS * 1000))  # Millisecond
 
         while True:
             if prev_cursor != self.cursor:
                 sheet = Sheet(self.get_selected_song(), demo=True, height=screen_height - box_padding * 4)
-            prev_cursor = self.cursor
+                prev_cursor = self.cursor
             screen.timeout(int(sheet.bpm_delay * 1000))  # Millisecond
-            start_ts = time.time()
 
             screen.clear()
             textpad.rectangle(screen, sheet_box[0][1], sheet_box[0][0], sheet_box[1][1], sheet_box[1][0])
@@ -113,22 +115,13 @@ class Menu:
             except BreakMainLoop:
                 break
 
-            sheet.update_cursor()
-            stop_ts = time.time()
-
-            while stop_ts - start_ts < sheet.bpm_delay:
-                screen.timeout(1)  # Millisecond
-                key = screen.getch()
-                try:
-                    self.handle_key(key)
-                except BreakMainLoop:
-                    break
-                stop_ts = time.time()
+            if sheet.tick():
+                sheet.update_cursor()
 
     def handle_key(self, key):
         if key > -1:
             if key == ord("q"):
-                raise Quit
+                raise QuitGame
             if key == curses.KEY_DOWN:
                 if self.cursor < len(self.songs) - 1:
                     self.cursor += 1
@@ -173,7 +166,3 @@ class SongSelected(Exception):
 
     def get_song(self):
         return self.song if self.song else None
-
-
-class Quit(Exception):
-    pass

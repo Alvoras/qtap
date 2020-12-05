@@ -44,6 +44,14 @@ TERMINAL_COLOR_TO_CURSES = {
 }
 
 
+class TerminalAttributes(object):
+    BOLD = "[1"
+
+TERMINAL_ATTRIBUTES_TO_CURSES = {
+    TerminalAttributes.BOLD: curses.A_BOLD
+}
+
+
 def _get_color(fg, bg):
     key = (fg, bg)
     if key not in COLOR_PAIRS_CACHE:
@@ -55,18 +63,25 @@ def _get_color(fg, bg):
     return COLOR_PAIRS_CACHE[key]
 
 
+def _parse_attr(color):
+    return TERMINAL_ATTRIBUTES_TO_CURSES.get(color, -1)
+
+
 def _color_str_to_color_pair(color):
     if color == TerminalColors.END:
         fg = curses.COLOR_WHITE
     else:
         fg = TERMINAL_COLOR_TO_CURSES[color]
     color_pair = _get_color(fg, curses.COLOR_BLACK)
+
     return color_pair
 
 
 def _add_line(y, x, window, line):
     # split but \033 which stands for a color change
     color_split = line.split('\033')
+
+    full_attr = 0
 
     # Print the first part of the line without color change
     default_color_pair = _get_color(curses.COLOR_WHITE, curses.COLOR_BLACK)
@@ -76,9 +91,15 @@ def _add_line(y, x, window, line):
     # Iterate over the rest of the line-parts and print them with their colors
     for substring in color_split[1:]:
         color_str = substring.split('m')[0]
+
+        attr = _parse_attr(color_str)
+        if attr > -1:
+            full_attr |= attr
+            continue
+
         substring = substring[len(color_str)+1:]
         color_pair = _color_str_to_color_pair(color_str)
-        window.addstr(y, x, substring, curses.color_pair(color_pair))
+        window.addstr(y, x, substring, curses.color_pair(color_pair) | full_attr)
         x += len(substring)
 
 

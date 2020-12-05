@@ -2,7 +2,8 @@ import curses
 from curses import textpad
 
 from lib import culour
-from lib.exceptions import BreakMainLoop
+from lib.exceptions import BreakMainLoop, SheetFinished, QuitGame
+from lib.constants import FPS
 
 from lib.sheet import Sheet
 
@@ -12,6 +13,8 @@ import time
 class Game:
     def __init__(self, song):
         self.song = song
+        self.start_ts = time.time()
+        self.stop_ts = 0
 
     def start(self):
         curses.wrapper(self.run)
@@ -50,25 +53,30 @@ class Game:
         screen.idcok(True)
         screen.idlok(True)
 
-        while True:
-            screen.timeout(int(sheet.bpm_delay * 1000))  # Millisecond
+        screen.timeout(int(1 / FPS * 1000))  # Millisecond
+        sheet.ts()
 
-            start_ts = time.time()
+        while True:
+            # Clear screen
             screen.clear()
+
+            # Draw windows
             textpad.rectangle(screen, sheet_box[0][1], sheet_box[0][0], sheet_box[1][1], sheet_box[1][0])
             textpad.rectangle(screen, circuit_box[0][1], circuit_box[0][0], circuit_box[1][1], circuit_box[1][0])
             textpad.rectangle(screen, score_box[0][1], score_box[0][0], score_box[1][1], score_box[1][0])
 
+            # Build sheet graphics line by line
             for idx, line in enumerate(sheet.render()):
                 if sheet.get_ready_done:
                     left_sheet_padding = (box_padding * 2 + ((screen_height - box_padding) - sheet.total_width) // 2) + 1
                 else:
                     left_sheet_padding = (box_padding * 2 + ((screen_height - box_padding) - len(line)) // 2) + 4
 
-                # left_sheet_padding = (box_padding * 2 + ((screen_height - box_padding) - sheet.total_width) // 2) + 1
                 top_sheet_padding = box_padding + idx
                 culour.addstr(screen, top_sheet_padding, left_sheet_padding, line)
-                screen.refresh()
+
+            # Flush built graphics to screen
+            screen.refresh()
 
             key = screen.getch()
 
@@ -77,26 +85,15 @@ class Game:
             except BreakMainLoop:
                 break
 
-            sheet.update_cursor()
-            stop_ts = time.time()
-
-            while stop_ts - start_ts < sheet.bpm_delay:
-                screen.timeout(1)  # Millisecond
-                key = screen.getch()
+            # If the time delta between last loop and now is more than the BPM's delay, then forward the sheet
+            if sheet.tick():
                 try:
-                    self.handle_key(key)
-                except BreakMainLoop:
-                    break
-                stop_ts = time.time()
-
-                # pause = min(sheet.bpm_delay, start_ts + sheet.bpm_delay - stop_ts)
-                # stop_ts = time.time()
-                # time.sleep(pause)
-
-            # Sleep for the remaining time if a key have been pressed ?
-            # screen.refresh()
+                    sheet.update_cursor()
+                except SheetFinished:
+                    pass
+    #               goto end game
 
     def handle_key(self, key):
         if key > -1:
             if key == ord("q"):
-                raise BreakMainLoop
+                raise QuitGame

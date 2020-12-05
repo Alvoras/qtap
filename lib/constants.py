@@ -1,10 +1,14 @@
+from colorama import Fore
+
 FRETS_COLOR_MAP = [
-    "red",
-    "yellow",
-    "green",
-    "blue",
-    "red",
-    "yellow",
-    "green",
-    "blue"
+    Fore.RED,
+    Fore.YELLOW,
+    Fore.GREEN,
+    Fore.BLUE,
+    Fore.RED,
+    Fore.YELLOW,
+    Fore.GREEN,
+    Fore.BLUE
 ]
+
+FPS = 30
