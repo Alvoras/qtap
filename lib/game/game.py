@@ -19,6 +19,9 @@ class Game:
         self.start_ts = time.time()
         self.stop_ts = 0
         self.score = 0
+        self.failure = 0
+        self.max_failure = 10
+        self.score_step = 1
 
     def start(self):
         curses.wrapper(self.run)
@@ -113,8 +116,26 @@ class Game:
                 try:
                     if sheet.has_value_to_compare():
                         measured = circuit.measure()
-                        self.score += sheet.compare(measured)
+                        if sheet.compare(measured):
+                            self.score += self.score_step
+                        else:
+                            self.failure += 1
 
                     sheet.update_cursor()
+                    self.check_end()
+
                 except SheetFinished:
                     raise
+
+    def check_end(self):
+        if self.failure >= self.max_failure:
+            raise GameLost(self)
+
+
+class GameLost(Exception):
+    def __init__(self, game):
+        super(GameLost, self).__init__()
+        self.game = game
+
+    def get_game(self):
+        return self.game if self.game else None

@@ -97,13 +97,13 @@ class Sheet:
 
     def compare(self, measured):
         if self.cursor >= len(self.tracks[0]):
-            return 0
+            return False
 
         for i in range(len(self.tracks)):
             if measured == self.tracks[i][self.cursor]:
-                return 1
+                return True
 
-        return 0
+        return False
 
     def make_tracks(self):
         lines = []
@@ -168,8 +168,6 @@ class Sheet:
         else:
             if time.time() - self.demo_start_ts >= 1:
                 self.demo_screen_done = True
-            # elif self.demo_counter < 6:
-            #     self.demo_counter += 1
 
         demo_lines = f""" /$$$$$$$  /$$$$$$$$ /$$      /$$  /$$$$$$ 
 | $$__  $$| $$_____/| $$$    /$$$ /$$__  $$
@@ -181,13 +179,12 @@ class Sheet:
 |_______/ |________/|__/     |__/ \______/ 
 """.splitlines()
 
-        # for i in range(((self.height//2) - 4) - self.demo_counter//2):
         for i in range(((self.height//2) - 4)):
             demo_lines.insert(0, "")
         return self.render() if self.demo_screen_done else demo_lines
 
     def signal_finished(self):
-        raise(SheetFinished(self))
+        raise SheetFinished(self)
 
 
 class SheetFinished(Exception):

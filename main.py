@@ -2,13 +2,14 @@
 import os
 
 from lib.exceptions import QuitGame
-from lib.game.game import Game
+from lib.game.game import Game, GameLost
+from lib.screens.failure_screen import show_failure_screen
 from lib.sheet import SheetFinished
 from colorama import init, deinit
 
 from lib.menu import Menu,SongSelected
-from lib.title_screen import show_title_screen
-from lib.finish_screen import show_finish_screen
+from lib.screens.title_screen import show_title_screen
+from lib.screens.finish_screen import show_finish_screen
 
 os.putenv("TERM", "xterm-256color")
 
@@ -29,7 +30,8 @@ while True:
         game.start()
     except SheetFinished:
         show_finish_screen(game)
-        # Show end screen
+    except GameLost:
+        show_failure_screen(game)
     except QuitGame:
         break
 

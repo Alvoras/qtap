@@ -35,6 +35,10 @@ class Circuit:
     def make_circuit(self):
         line_idx = ceil(self.grid_delta / 2)
         lines = []
+        allowed_trace_connectors = [GATE_MAPPING[NODE_TYPES.CTRL_TOP_WIRE],
+                                   GATE_MAPPING[NODE_TYPES.CTRL_BOTTOM_WIRE],
+                                   GATE_MAPPING[NODE_TYPES.NOT_GATE],
+                                   GATE_MAPPING[NODE_TYPES.TRACE]]
 
         for wire in range(self.qbit_qty):
             for _ in range(self.grid_delta):
@@ -47,15 +51,15 @@ class Circuit:
                 c = self.render_gate(wire, col).center(5)
 
                 left_padding = (col * (self.width // MAX_COLUMNS)) + (self.width // MAX_COLUMNS) // 2
-                lines[offset] = lines[offset][:left_padding - 2] + c + lines[offset][left_padding+3:]
+                lines[offset] = lines[offset][:left_padding - 2] + c + lines[offset][left_padding + 3:]
 
-                line_offset = offset-self.grid_delta//2
+                line_offset = offset - self.grid_delta // 2
                 # Add a "│" on the previous line (same column) if the current is a ctrl-related node
                 if wire > 0:
                     if GATE_MAPPING[NODE_TYPES.CTRL_TOP_WIRE] in c:
                         if wire > self.circuit_grid_model.get_gate_wire_for_control_node(wire, col):
                             lines[line_offset] = lines[line_offset][:left_padding] + GATE_MAPPING[NODE_TYPES.TRACE] + lines[line_offset][left_padding:]
-                    elif GATE_MAPPING[NODE_TYPES.NOT_GATE] in c and self.render_gate(wire-1, col) != GATE_MAPPING[NODE_TYPES.IDEN]:
+                    elif GATE_MAPPING[NODE_TYPES.NOT_GATE] in c and self.render_gate(wire - 1, col) in allowed_trace_connectors:
                         lines[line_offset] = lines[line_offset][:left_padding] + GATE_MAPPING[NODE_TYPES.TRACE] + lines[line_offset][left_padding:]
                     elif GATE_MAPPING[NODE_TYPES.TRACE] in c:
                         lines[line_offset] = lines[line_offset][:left_padding] + GATE_MAPPING[NODE_TYPES.TRACE] + lines[line_offset][left_padding:]
