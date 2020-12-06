@@ -139,7 +139,7 @@ class Circuit:
         return c
 
     def predict(self):
-        print("Want to predict")
+        # print("Want to predict")
         circuit = self.circuit_grid_model.compute_circuit()
 
         backend_sv_sim = BasicAer.get_backend('statevector_simulator')
@@ -147,8 +147,10 @@ class Circuit:
         result_sim = job_sim.result()
         quantum_state = result_sim.get_statevector(circuit, decimals=3)
 
-        for y in range(len(quantum_state)):
-            print("Value predicted for " + str(y) + " : " + str(quantum_state[y]))
+        return quantum_state
+
+        # for y in range(len(quantum_state)):
+        #     print("Value predicted for " + str(y) + " : " + str(quantum_state[y]))
 
     def measure(self):
         circuit = self.circuit_grid_model.compute_circuit()
@@ -161,7 +163,6 @@ class Circuit:
         job_sim = execute(measure_circuit, backend_sv_sim, shots=NUM_SHOTS)
         result_sim = job_sim.result()
         counts = result_sim.get_counts(circuit)
-
-        # TODO : Clean array
+        self.circuit_grid_model.reset_circuit()
 
         return list(counts.keys())[0]

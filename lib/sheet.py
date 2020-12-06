@@ -84,11 +84,13 @@ class Sheet:
             self.check_end()
 
     def has_value_to_compare(self):
+        empty_symbol = "-"*self.qbit_qty
+
         if self.cursor >= len(self.tracks[0]):
             return False
 
         for i in range(len(self.tracks)):
-            if self.tracks[i][self.cursor] != "--":
+            if self.tracks[i][self.cursor] != empty_symbol:
                 return True
 
         return False
@@ -126,7 +128,7 @@ class Sheet:
         lines.reverse()
         return lines
 
-    def render(self):
+    def render(self, predicted_idx=None):
         if self.cursor == self.prev_cursor:
             return self.render_buf
         if not self.demo:
@@ -152,8 +154,8 @@ class Sheet:
                 return get_ready_number
 
         lines = self.make_tracks()
-        lines += (self.bar.render())
-        self.bar.update()
+
+        lines += (self.bar.render(predicted_idx))
 
         self.render_buf = lines
         self.prev_cursor = self.cursor

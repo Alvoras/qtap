@@ -82,4 +82,5 @@ def handle_input(circuit, key):
     elif key == ord("W"):
         # Move a control qubit up
         circuit_grid.handle_input_move_ctrl(MOVE_UP)
-        circuit.render()
+
+    circuit.render()

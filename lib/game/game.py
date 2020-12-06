@@ -78,8 +78,14 @@ class Game:
             culour.addstr(screen, top_sheet_padding_score + 1, right_panel_left_padding + box_padding,
                           "Score : " + str(self.score))
 
+            # raise Exception(circuit.predict())
+            predictions = list(circuit.predict())
+            predicted_idx = predictions.index(max(predictions))
+            if predictions.count(predicted_idx) > 1:
+                predicted_idx = -1
+
             # Build sheet graphics line by line
-            for idx, line in enumerate(sheet.render()):
+            for idx, line in enumerate(sheet.render(predicted_idx)):
                 if sheet.get_ready_done:
                     left_sheet_padding = (box_padding * 2 + ((screen_height - box_padding) - sheet.total_width) // 2) + 1
                 else:

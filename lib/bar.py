@@ -10,9 +10,6 @@ class Bar:
         self.tracks_measure = ["{0:b}".format(n).zfill(qbit_qty) for n in range(self.tracks_qty)]
         self.total_width = (len(self.tracks_measure) * qbit_qty) + (qbit_qty-1)
 
-    def update(self):
-        pass
-
     def make_frets(self):
         frets = []
         for idx in range(self.tracks_qty):
@@ -29,11 +26,18 @@ class Bar:
 
         return track_ref
 
-    def render(self):
-        lines = []
-        lines.append(f"┌────{' ' * self.qbit_qty}{''.join(self.make_frets())}┐")
-        lines.append(f"│░░░░{' ' * self.qbit_qty}{''.join(self.make_track_ref())}│")
-        return lines
+    def render(self, predicted_idx):
+        if predicted_idx is None:
+            predicted = "░░░░"
+        else:
+            if predicted_idx == -1:
+                predicted = "~"
+            else:
+                predicted = self.tracks_measure[predicted_idx]
+            predicted_color = FRETS_COLOR_MAP[predicted_idx]
+            predicted = f"{Style.BRIGHT}{predicted_color}{predicted.center(4)}{Style.RESET_ALL}"
 
-    def measure(self):
-        pass
+        lines = [f"┌────{' ' * self.qbit_qty}{''.join(self.make_frets())}┐",
+                 f"│{predicted}{' ' * self.qbit_qty}{''.join(self.make_track_ref())}│"]
+
+        return lines
