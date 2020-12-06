@@ -121,7 +121,7 @@ class Sheet:
                     lines[idx] += " "
             else:
                 # Out of sheet bounds, we want to print blank lines to allow the sheet to scroll to the bottom
-                lines.append(f"│ ---{' ' * self.qbit_qty}{(' ' * self.qbit_qty + ' ') * len(self.tracks)}")
+                lines.append(f"│ ---{' ' * self.qbit_qty}{('-' * self.qbit_qty + ' ') * len(self.tracks)}")
 
             lines[idx] += "│"
 
@@ -142,7 +142,6 @@ class Sheet:
 
             get_ready_number = Figlet(font="banner").renderText(str(abs(self.get_ready_counter - max_frames)//get_ready_period - 1)).splitlines()
             if not self.get_ready_done and self.get_ready_counter < max_frames + get_ready_period:
-                self.get_ready_counter += 1
                 if self.get_ready_counter > max_frames - get_ready_period:
                     get_ready_number = Figlet(font="banner").renderText("GO!").splitlines()
                 if self.get_ready_counter > max_frames:
@@ -151,6 +150,7 @@ class Sheet:
                 for i in range((self.height//2) - half_text_height):
                     get_ready_number.insert(0, "")
 
+                self.get_ready_counter += 1
                 return get_ready_number
 
         lines = self.make_tracks()

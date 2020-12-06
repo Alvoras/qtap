@@ -100,9 +100,6 @@ class Game:
                 top_sheet_padding = box_padding + idx
                 culour.addstr(screen, top_sheet_padding, left_sheet_padding, line)
 
-            # Flush built graphics to screen
-            # screen.refresh()
-
             key = screen.getch()
 
             try:

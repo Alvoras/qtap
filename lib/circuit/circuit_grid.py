@@ -160,7 +160,8 @@ class CircuitGrid:
                     if self.place_ctrl_qubit(self.selected_wire, self.selected_wire - 1) == -1:
                         if self.selected_wire < self.circuit_grid_model.max_wires:
                             if self.place_ctrl_qubit(self.selected_wire, self.selected_wire + 1) == -1:
-                                print("Can't place control qubit")
+                                pass
+                                # print("Can't place control qubit")
                                 # self.display_exceptional_condition()
 
     def handle_input_move_ctrl(self, direction):

@@ -20,7 +20,7 @@ class Circuit:
         self.circuit_grid_model = CircuitGridModel(self.qbit_qty, MAX_COLUMNS)
         self.circuit_grid = CircuitGrid(self.qbit_qty, MAX_COLUMNS, self.circuit_grid_model)
 
-        self.grid_delta = 3
+        self.grid_delta = 4
         self.y_padding = (self.height - (self.grid_delta * self.qbit_qty)) // 2
 
     def render(self):
@@ -48,6 +48,17 @@ class Circuit:
 
                 left_padding = (col * (self.width // MAX_COLUMNS)) + (self.width // MAX_COLUMNS) // 2
                 lines[offset] = lines[offset][:left_padding - 2] + c + lines[offset][left_padding+3:]
+
+                line_offset = offset-self.grid_delta//2
+                # Add a "│" on the previous line (same column) if the current is a ctrl-related node
+                if wire > 0:
+                    if GATE_MAPPING[NODE_TYPES.CTRL_TOP_WIRE] in c:
+                        if wire > self.circuit_grid_model.get_gate_wire_for_control_node(wire, col):
+                            lines[line_offset] = lines[line_offset][:left_padding] + GATE_MAPPING[NODE_TYPES.TRACE] + lines[line_offset][left_padding:]
+                    elif GATE_MAPPING[NODE_TYPES.NOT_GATE] in c and self.render_gate(wire-1, col) != GATE_MAPPING[NODE_TYPES.IDEN]:
+                        lines[line_offset] = lines[line_offset][:left_padding] + GATE_MAPPING[NODE_TYPES.TRACE] + lines[line_offset][left_padding:]
+                    elif GATE_MAPPING[NODE_TYPES.TRACE] in c:
+                        lines[line_offset] = lines[line_offset][:left_padding] + GATE_MAPPING[NODE_TYPES.TRACE] + lines[line_offset][left_padding:]
 
         lines.append(" " * self.width)
 
@@ -107,9 +118,9 @@ class Circuit:
                 # This is a control-X gate or Toffoli gate
                 # TODO: Handle Toffoli gates more completely
                 if wire > max(node.ctrl_a, node.ctrl_b):
-                    c = GATE_MAPPING["NOT_GATE"]
+                    c = GATE_MAPPING[NODE_TYPES.NOT_GATE]
                 else:
-                    c = GATE_MAPPING["NOT_GATE"]
+                    c = GATE_MAPPING[NODE_TYPES.NOT_GATE]
             elif node.radians != 0:
                 c = self.render_rotated_gate(node)
             else:
@@ -127,9 +138,9 @@ class Circuit:
         elif computed_type == NODE_TYPES.CTRL:
             if wire > \
                     self.circuit_grid_model.get_gate_wire_for_control_node(wire, col):
-                c = GATE_MAPPING["CTRL_BOTTOM_WIRE"]
+                c = GATE_MAPPING[NODE_TYPES.CTRL_BOTTOM_WIRE]
             else:
-                c = GATE_MAPPING["CTRL_TOP_WIRE"]
+                c = GATE_MAPPING[NODE_TYPES.CTRL_TOP_WIRE]
         else:
             try:
                 c = GATE_MAPPING[node.node_type]
