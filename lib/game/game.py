@@ -2,8 +2,9 @@ import curses
 from curses import textpad
 
 from lib import culour
-from lib.exceptions import BreakMainLoop, QuitGame
+from lib.exceptions import BreakMainLoop
 from lib.constants import FPS
+from lib.game.input import handle_key
 
 from lib.sheet import Sheet, SheetFinished
 from lib.circuit.circuit import Circuit
@@ -55,7 +56,7 @@ class Game:
         score_box = [[right_panel_left_padding, screen_height - score_box_height],
                      [right_panel_right_padding, screen_height - box_padding]]  # [[top_x, top_y], [bot_x, bot_y]]
 
-        song_author_str = "Chanson en cours : " + sheet.song.name + " - " + sheet.song.author
+        song_author_str = "Now playing : " + sheet.song.name + " - " + sheet.song.author
 
         screen.idcok(True)
         # screen.idlok(True)
@@ -100,7 +101,7 @@ class Game:
 
             try:
                 grid_input.handle_input(circuit, key)
-                self.handle_key(key)
+                handle_key(key)
             except BreakMainLoop:
                 break
 
@@ -114,8 +115,3 @@ class Game:
                     sheet.update_cursor()
                 except SheetFinished:
                     raise
-
-    def handle_key(self, key):
-        if key > -1:
-            if key == ord("q"):
-                raise QuitGame

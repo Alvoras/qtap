@@ -1,10 +1,11 @@
 from lib.circuit.circuit_grid import CircuitGrid
 from lib.circuit.circuit_grid_model import CircuitGridModel
 from lib.constants import MAX_COLUMNS, NUM_SHOTS
+from lib.circuit.circuit_node_types import GATE_MAPPING
 import lib.circuit.circuit_node_types as NODE_TYPES
 
-from math import ceil
-
+from math import ceil, degrees
+import numpy as np
 from qiskit import BasicAer, execute, ClassicalRegister
 
 from copy import deepcopy
@@ -43,10 +44,10 @@ class Circuit:
             lines[offset] = "─" * self.width
 
             for col in range(MAX_COLUMNS):
-                c = self.render_gate(wire, col)
+                c = self.render_gate(wire, col).center(5)
 
                 left_padding = (col * (self.width // MAX_COLUMNS)) + (self.width // MAX_COLUMNS) // 2
-                lines[offset] = lines[offset][:left_padding - 1] + c + lines[offset][left_padding+2:]
+                lines[offset] = lines[offset][:left_padding - 2] + c + lines[offset][left_padding+3:]
 
         lines.append(" " * self.width)
 
@@ -61,10 +62,11 @@ class Circuit:
 
         gate = self.render_gate(self.circuit_grid.selected_wire, self.circuit_grid.selected_column)
         cursor = [
-            "╰─ ─╯",
-            f"  {gate}  ",
-            "╭─ ─╮"
+            "╭─ ─╮",
+            f"{gate.center(5)}",
+            "╰─ ─╯"
         ]
+        cursor.reverse()
 
         for idx, line in enumerate(cursor):
             cursor_line_size = len(cursor[idx]) // 2
@@ -76,26 +78,65 @@ class Circuit:
 
         return lines
 
-    def render_gate(self, x, y):
-        # need 3 character for rendering gate
-        # X = 1
-        # Y = 2
-        # Z = 3
-        # S = 4
-        # SDG = 5
-        # T = 6
-        # TDG = 7
-        # H = 8
-        # SWAP = 9
+    def render_rotated_gate(self, node):
+        c = GATE_MAPPING[node.node_type]
+        c += " "
+        deg = int(degrees(node.radians % (2 * np.pi)))
+        if deg < 90:
+            c += "◯"
+        elif 90 <= deg < 180:
+            c += "◔"
+        elif 180 <= deg < 270:
+            c += "◑"
+        elif 270 <= deg < 360:
+            c += "◕"
 
-        c = "▆"
-        gate = self.circuit_grid_model.get_node_gate_part(x, y)
-        if gate == NODE_TYPES.EMPTY:
-            pass
-        elif gate == NODE_TYPES.H:
-            c = "H"
+        return c
 
-        return f" {c} "
+    def render_gate(self, wire, col):
+        c = "#"
+        node = self.circuit_grid_model.get_node(wire, col)
+        computed_type = self.circuit_grid_model.get_node_gate_part(wire, col)
+
+        if not node:
+            return c
+        if computed_type == NODE_TYPES.H:
+            c = GATE_MAPPING[node.node_type]
+        elif computed_type == NODE_TYPES.X:
+            if node.ctrl_a >= 0 or node.ctrl_b >= 0:
+                # This is a control-X gate or Toffoli gate
+                # TODO: Handle Toffoli gates more completely
+                if wire > max(node.ctrl_a, node.ctrl_b):
+                    c = GATE_MAPPING["NOT_GATE"]
+                else:
+                    c = GATE_MAPPING["NOT_GATE"]
+            elif node.radians != 0:
+                c = self.render_rotated_gate(node)
+            else:
+                c = GATE_MAPPING[NODE_TYPES.X]
+        elif computed_type == NODE_TYPES.Y:
+            if node.radians != 0:
+                c = self.render_rotated_gate(node)
+            else:
+                c = GATE_MAPPING[node.node_type]
+        elif computed_type == NODE_TYPES.Z:
+            if node.radians != 0:
+                c = self.render_rotated_gate(node)
+            else:
+                c = GATE_MAPPING[node.node_type]
+        elif computed_type == NODE_TYPES.CTRL:
+            if wire > \
+                    self.circuit_grid_model.get_gate_wire_for_control_node(wire, col):
+                c = GATE_MAPPING["CTRL_BOTTOM_WIRE"]
+            else:
+                c = GATE_MAPPING["CTRL_TOP_WIRE"]
+        else:
+            try:
+                c = GATE_MAPPING[node.node_type]
+            except KeyError:
+                pass
+
+        return c
 
     def predict(self):
         print("Want to predict")

@@ -81,6 +81,38 @@ class CircuitGrid:
         elif selected_node_gate_part == node_types.H:
             self.handle_input_delete()
 
+    def handle_input_s(self):
+        selected_node_gate_part = self.get_selected_node_gate_part()
+        if selected_node_gate_part == node_types.EMPTY:
+            circuit_grid_node = CircuitGridNode(node_types.S)
+            self.circuit_grid_model.set_node(self.selected_wire, self.selected_column, circuit_grid_node)
+        elif selected_node_gate_part == node_types.S:
+            self.handle_input_delete()
+
+    def handle_input_sdg(self):
+        selected_node_gate_part = self.get_selected_node_gate_part()
+        if selected_node_gate_part == node_types.EMPTY:
+            circuit_grid_node = CircuitGridNode(node_types.SDG)
+            self.circuit_grid_model.set_node(self.selected_wire, self.selected_column, circuit_grid_node)
+        elif selected_node_gate_part == node_types.SDG:
+            self.handle_input_delete()
+
+    def handle_input_t(self):
+        selected_node_gate_part = self.get_selected_node_gate_part()
+        if selected_node_gate_part == node_types.EMPTY:
+            circuit_grid_node = CircuitGridNode(node_types.T)
+            self.circuit_grid_model.set_node(self.selected_wire, self.selected_column, circuit_grid_node)
+        elif selected_node_gate_part == node_types.T:
+            self.handle_input_delete()
+
+    def handle_input_tdg(self):
+        selected_node_gate_part = self.get_selected_node_gate_part()
+        if selected_node_gate_part == node_types.EMPTY:
+            circuit_grid_node = CircuitGridNode(node_types.TDG)
+            self.circuit_grid_model.set_node(self.selected_wire, self.selected_column, circuit_grid_node)
+        elif selected_node_gate_part == node_types.TDG:
+            self.handle_input_delete()
+
     def handle_input_delete(self):
         selected_node_gate_part = self.get_selected_node_gate_part()
         if selected_node_gate_part == node_types.X or \
@@ -122,6 +154,14 @@ class CircuitGrid:
                                                                   self.selected_column) == node_types.TRACE:
                         self.circuit_grid_model.set_node(wire_num, self.selected_column,
                                                          CircuitGridNode(node_types.EMPTY))
+            else:
+                # Attempt to place a control qubit beginning with the wire above
+                if self.selected_wire >= 0:
+                    if self.place_ctrl_qubit(self.selected_wire, self.selected_wire - 1) == -1:
+                        if self.selected_wire < self.circuit_grid_model.max_wires:
+                            if self.place_ctrl_qubit(self.selected_wire, self.selected_wire + 1) == -1:
+                                print("Can't place control qubit")
+                                # self.display_exceptional_condition()
 
     def handle_input_move_ctrl(self, direction):
         selected_node_gate_part = self.get_selected_node_gate_part()
@@ -142,7 +182,7 @@ class CircuitGrid:
                         candidate_wire_num += 1
                 if 0 <= candidate_wire_num < self.circuit_grid_model.max_wires:
                     if self.place_ctrl_qubit(self.selected_wire, candidate_wire_num) == candidate_wire_num:
-                        print("control qubit successfully placed on wire ", candidate_wire_num)
+                        # print("control qubit successfully placed on wire ", candidate_wire_num)
                         if direction == MOVE_UP and candidate_wire_num < self.selected_wire:
                             if self.circuit_grid_model.get_node_gate_part(candidate_wire_num + 1,
                                                                           self.selected_column) == node_types.EMPTY:
@@ -154,7 +194,8 @@ class CircuitGrid:
                                 self.circuit_grid_model.set_node(candidate_wire_num - 1, self.selected_column,
                                                                  CircuitGridNode(node_types.TRACE))
                     else:
-                        print("control qubit could not be placed on wire ", candidate_wire_num)
+                        pass
+                        # print("control qubit could not be placed on wire ", candidate_wire_num)
 
     def handle_input_rotate(self, radians):
         selected_node_gate_part = self.get_selected_node_gate_part()
@@ -183,7 +224,7 @@ class CircuitGrid:
                                              CircuitGridNode(node_types.EMPTY))
             return candidate_ctrl_wire_num
         else:
-            print("Can't place control qubit on wire: ", candidate_ctrl_wire_num)
+            # print("Can't place control qubit on wire: ", candidate_ctrl_wire_num)
             return -1
 
     def delete_controls_for_gate(self, gate_wire_num, column_num):
@@ -207,6 +248,6 @@ class CircuitGrid:
         if control_wire_num >= 0:
             for wire_idx in range(min(gate_wire_num, control_wire_num),
                                   max(gate_wire_num, control_wire_num) + 1):
-                print("Replacing wire ", wire_idx, " in column ", column_num)
+                # print("Replacing wire ", wire_idx, " in column ", column_num)
                 circuit_grid_node = CircuitGridNode(node_types.EMPTY)
                 self.circuit_grid_model.set_node(wire_idx, column_num, circuit_grid_node)

@@ -2,7 +2,7 @@
 import os
 
 from lib.exceptions import QuitGame
-from lib.game import Game
+from lib.game.game import Game
 from lib.sheet import SheetFinished
 from colorama import init, deinit
 

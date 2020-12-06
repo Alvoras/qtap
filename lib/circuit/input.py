@@ -1,5 +1,6 @@
 import curses
 from lib.constants import MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT
+import numpy as np
 
 
 def handle_input(circuit, key):
@@ -39,9 +40,33 @@ def handle_input(circuit, key):
         circuit_grid.handle_input_h()
         circuit.render()
 
+    elif key == ord("s"):
+        circuit_grid.handle_input_s()
+        circuit.render()
+
+    elif key == ord("S"):
+        circuit_grid.handle_input_sdg()
+        circuit.render()
+
+    elif key == ord("t"):
+        circuit_grid.handle_input_t()
+        circuit.render()
+
+    elif key == ord("T"):
+        circuit_grid.handle_input_tdg()
+        circuit.render()
+
     # Space
     elif key == 32:
         circuit_grid.handle_input_delete()
+        circuit.render()
+
+    elif key == ord("e"):
+        circuit_grid.handle_input_rotate(np.pi / 2)  # +45°
+        circuit.render()
+
+    elif key == ord("a"):
+        circuit_grid.handle_input_rotate(-np.pi / 2)  # -45°
         circuit.render()
 
     elif key == ord("c"):
@@ -50,6 +75,11 @@ def handle_input(circuit, key):
         circuit.render()
 
     elif key == ord("w"):
+        # Move a control qubit up
+        circuit_grid.handle_input_move_ctrl(MOVE_DOWN)
+        circuit.render()
+
+    elif key == ord("W"):
         # Move a control qubit up
         circuit_grid.handle_input_move_ctrl(MOVE_UP)
         circuit.render()
