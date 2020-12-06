@@ -36,23 +36,16 @@ class Circuit:
         lines = []
 
         for wire in range(self.qbit_qty):
-            # 0 - 2
             for _ in range(self.grid_delta):
-                # 0 - 6
                 lines.append(" " * self.width)
 
             offset = (wire * self.grid_delta) + line_idx
-        #     2
             lines[offset] = "─" * self.width
 
             for col in range(MAX_COLUMNS):
                 c = self.render_gate(wire, col)
-                # if col == self.circuit_grid.selected_column and wire == self.circuit_grid.selected_wire:
-                #     c = "x"
-                # else:
-                #     c = "▆"
 
-                left_padding = (col*((self.width)//MAX_COLUMNS)) + (self.width//MAX_COLUMNS)//2
+                left_padding = (col * (self.width // MAX_COLUMNS)) + (self.width // MAX_COLUMNS) // 2
                 lines[offset] = lines[offset][:left_padding - 1] + c + lines[offset][left_padding+2:]
 
         lines.append(" " * self.width)
@@ -64,7 +57,7 @@ class Circuit:
     def draw_cursor(self, lines):
         line_idx = ceil(self.grid_delta / 2)
         offset = (self.circuit_grid.selected_wire * self.grid_delta) + line_idx
-        left_padding = (self.circuit_grid.selected_column*((self.width)//MAX_COLUMNS)) + (self.width//MAX_COLUMNS)//2
+        left_padding = (self.circuit_grid.selected_column * (self.width // MAX_COLUMNS)) + (self.width // MAX_COLUMNS) // 2
 
         gate = self.render_gate(self.circuit_grid.selected_wire, self.circuit_grid.selected_column)
         cursor = [
@@ -73,8 +66,6 @@ class Circuit:
             "╭─ ─╮"
         ]
 
-        # lines[offset] = lines[offset][:left_padding - 2] + cursor[1] + lines[offset][left_padding+3:]
-
         for idx, line in enumerate(cursor):
             cursor_line_size = len(cursor[idx]) // 2
             cursor_height_size = len(cursor) // 2
@@ -82,36 +73,29 @@ class Circuit:
 
             lines[cursor_offset_y] = lines[cursor_offset_y][:left_padding - cursor_line_size] + \
                 cursor[idx] + lines[cursor_offset_y][left_padding + cursor_line_size + 1:]
-            # offset = y - (idx-1)
-            # self.replacer(lines[offset-(idx-1)], line, left_padding - (idx-2))
-            # lines[offset] = lines[offset][:y-idx-2] + gate + lines[offset][y+idx-2:]
 
         return lines
 
-    def replacer(self, s, newstring, index, nofail=False):
-        # raise an error if index is outside of the string
-        if not nofail and index not in range(len(s)):
-            raise ValueError("index outside given string")
-
-        # if not erroring, but the index is still not in the correct range..
-        if index < 0:  # add it to the beginning
-            return newstring + s
-        if index > len(s):  # add it to the end
-            return s + newstring
-
-        # insert the new string between "slices" of the original
-        return s[:index] + newstring + s[index + 1:]
-
     def render_gate(self, x, y):
         # need 3 character for rendering gate
-        c = " ▆ "
+        # X = 1
+        # Y = 2
+        # Z = 3
+        # S = 4
+        # SDG = 5
+        # T = 6
+        # TDG = 7
+        # H = 8
+        # SWAP = 9
+
+        c = "▆"
         gate = self.circuit_grid_model.get_node_gate_part(x, y)
         if gate == NODE_TYPES.EMPTY:
             pass
         elif gate == NODE_TYPES.H:
-            c = " H "
+            c = "H"
 
-        return c
+        return f" {c} "
 
     def predict(self):
         print("Want to predict")

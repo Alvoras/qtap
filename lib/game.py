@@ -65,7 +65,7 @@ class Game:
 
         while True:
             # Clear screen
-            screen.clear()
+            screen.erase()
 
             # Draw windows
             textpad.rectangle(screen, sheet_box[0][1], sheet_box[0][0], sheet_box[1][1], sheet_box[1][0])

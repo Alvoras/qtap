@@ -79,7 +79,7 @@ class Menu:
                 prev_cursor = self.cursor
             screen.timeout(int(sheet.bpm_delay * 1000))  # Millisecond
 
-            screen.clear()
+            screen.erase()
             textpad.rectangle(screen, sheet_box[0][1], sheet_box[0][0], sheet_box[1][1], sheet_box[1][0])
             textpad.rectangle(screen, cover_box[0][1], cover_box[0][0], cover_box[1][1], cover_box[1][0])
             textpad.rectangle(screen, score_box[0][1], score_box[0][0], score_box[1][1], score_box[1][0])
