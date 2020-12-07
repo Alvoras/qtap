@@ -1,7 +1,7 @@
 import curses
 import os
 from curses import textpad
-from rich.console import Console
+from colorama import Fore, Style
 
 from lib import culour
 from lib.constants import FPS
@@ -41,7 +41,7 @@ class Menu:
         screen.keypad(1)
 
         box_padding = 2
-        score_box_height = 10
+        song_box_height = 10
 
         screen_height, screen_width = screen.getmaxyx()
 
@@ -59,13 +59,13 @@ class Menu:
                      [screen_width // 3 - (box_padding - 1), screen_height - box_padding]]  # [[top_x, top_y], [bot_x, bot_y]]
 
         cover_box = [[right_panel_left_padding, 1],
-                       [right_panel_right_padding, screen_height - score_box_height]]  # [[top_x, top_y], [bot_x, bot_y]]
+                       [right_panel_right_padding, screen_height - song_box_height]]  # [[top_x, top_y], [bot_x, bot_y]]
 
-        score_box = [[right_panel_left_padding, screen_height - score_box_height],
+        song_box = [[right_panel_left_padding, screen_height - song_box_height],
                      [right_panel_right_padding, screen_height - box_padding]]  # [[top_x, top_y], [bot_x, bot_y]]
 
         screen.idcok(True)
-        screen.idlok(True)
+        # screen.idlok(True)
 
         sheet = Sheet(self.get_selected_song(), demo=True, height=screen_height - box_padding * 4)
         prev_cursor = self.cursor
@@ -82,10 +82,12 @@ class Menu:
             screen.erase()
             textpad.rectangle(screen, sheet_box[0][1], sheet_box[0][0], sheet_box[1][1], sheet_box[1][0])
             textpad.rectangle(screen, cover_box[0][1], cover_box[0][0], cover_box[1][1], cover_box[1][0])
-            textpad.rectangle(screen, score_box[0][1], score_box[0][0], score_box[1][1], score_box[1][0])
+            textpad.rectangle(screen, song_box[0][1], song_box[0][0], song_box[1][1], song_box[1][0])
+
+            culour.addstr(screen, screen_height - song_box_height, right_panel_left_padding + 1, f' Press "Enter" to select a song ')
 
             for idx, line in enumerate(self.render()):
-                top_sheet_padding = (screen_height - score_box_height) + idx + 1
+                top_sheet_padding = (screen_height - song_box_height) + idx + 1
                 culour.addstr(screen, top_sheet_padding, right_panel_left_padding+box_padding, line)
 
             cover = self.get_selected_song_cover()
@@ -133,12 +135,8 @@ class Menu:
 
     def render(self):
         songs_list = []
-        console = Console()
         for song in self.songs:
-            with console.capture() as capture:
-                console.print(f"[green]●[/green]", end="") if song.mode == "easy" else console.print(f"[yellow]●[/yellow]", end="")
-            dot = capture.get()
-
+            dot = f"{Fore.GREEN}●{Style.RESET_ALL}" if song.mode == "easy" else f"{Fore.YELLOW}●{Style.RESET_ALL}"
             songs_list.append(f"{dot} {song.name}")
 
         songs_list[self.cursor] = f"> {songs_list[self.cursor]}"
@@ -146,7 +144,9 @@ class Menu:
 
     def render_selected_song_meta(self):
         song = self.get_selected_song()
-        lines = [f"Name : {song.name}", f"Author : {song.author}", f"BPM : {song.bpm}", f"Difficulty : {song.mode}"]
+        difficulty = f"{Fore.GREEN}{song.mode}{Style.RESET_ALL}" if song.mode == "easy" else f"{Fore.YELLOW}{song.mode}{Style.RESET_ALL}"
+        qbit_qty = "2" if song.mode == "easy" else "3"
+        lines = [f"Name : {song.name}", f"Author : {song.author}", f"BPM : {song.bpm}", f"Difficulty : {difficulty}", f"Qbits: {qbit_qty}"]
 
         return lines
 

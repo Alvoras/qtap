@@ -4,7 +4,7 @@ from curses import textpad
 
 from lib import culour
 from lib.exceptions import BreakMainLoop
-from lib.constants import FPS
+from lib.constants import FPS, Bindings
 from lib.game.input import handle_key
 
 from lib.sheet import Sheet, SheetFinished
@@ -13,6 +13,7 @@ from lib.circuit.circuit import Circuit
 import time
 import lib.circuit.input as grid_input
 from playsound import playsound
+
 
 class Game:
     def __init__(self, song):
@@ -38,7 +39,8 @@ class Game:
         screen.keypad(1)
 
         box_padding = 2
-        score_box_height = 10
+        score_box_height = 3
+        bindings_box_height = 10
 
         screen_height, screen_width = screen.getmaxyx()
         right_panel_left_padding = (screen_width // 3) + 1
@@ -46,7 +48,8 @@ class Game:
 
         sheet = Sheet(self.song, height=screen_height - box_padding * 4)
         circuit = Circuit(sheet.qbit_qty,
-                          height=(screen_height - score_box_height) - box_padding,
+                          sheet.bar,
+                          height=(screen_height - (score_box_height + bindings_box_height)) - box_padding,
                           width=((screen_width - box_padding) - ((box_padding * 2)+ right_panel_left_padding)))
 
         # Starts at 0,0 (top - left) :
@@ -60,18 +63,22 @@ class Game:
                      [screen_width // 3 - (box_padding - 1), screen_height - box_padding]]  # [[top_x, top_y], [bot_x, bot_y]]
 
         circuit_box = [[right_panel_left_padding, 1],
-                       [right_panel_right_padding, screen_height - score_box_height]]  # [[top_x, top_y], [bot_x, bot_y]]
+                       [right_panel_right_padding, screen_height - (score_box_height + bindings_box_height)]]  # [[top_x, top_y], [bot_x, bot_y]]
 
-        score_box = [[right_panel_left_padding, screen_height - score_box_height],
+        score_box = [[right_panel_left_padding, screen_height - (bindings_box_height + score_box_height)],
+                     [right_panel_right_padding, screen_height - bindings_box_height]]  # [[top_x, top_y], [bot_x, bot_y]]
+
+        bindings_box = [[right_panel_left_padding, screen_height - bindings_box_height],
                      [right_panel_right_padding, screen_height - box_padding]]  # [[top_x, top_y], [bot_x, bot_y]]
 
-        song_author_str = "Now playing : " + sheet.song.name + " - " + sheet.song.author
+        song_author_str = f" Now playing : {sheet.song.name} - {sheet.song.author} "
 
         screen.idcok(True)
         # screen.idlok(True)
 
         screen.timeout(int(1 / FPS * 1000))  # Millisecond
         sheet.ts()
+        screen.clear()
 
         while True:
             # Clear screen
@@ -81,13 +88,25 @@ class Game:
             textpad.rectangle(screen, sheet_box[0][1], sheet_box[0][0], sheet_box[1][1], sheet_box[1][0])
             textpad.rectangle(screen, circuit_box[0][1], circuit_box[0][0], circuit_box[1][1], circuit_box[1][0])
             textpad.rectangle(screen, score_box[0][1], score_box[0][0], score_box[1][1], score_box[1][0])
+            textpad.rectangle(screen, bindings_box[0][1], bindings_box[0][0], bindings_box[1][1], bindings_box[1][0])
 
-            top_sheet_padding_score = (screen_height - score_box_height) + 1
-            culour.addstr(screen, top_sheet_padding_score, right_panel_left_padding + box_padding, song_author_str)
-            culour.addstr(screen, top_sheet_padding_score + 1, right_panel_left_padding + box_padding,
+            # Add score
+            top_sheet_padding_score = screen_height - (score_box_height + bindings_box_height) + 1
+            culour.addstr(screen, top_sheet_padding_score - 1, right_panel_left_padding + box_padding, song_author_str)
+            culour.addstr(screen, top_sheet_padding_score, right_panel_left_padding + box_padding,
                           "Score : " + str(self.score))
 
-            # raise Exception(circuit.predict())
+            # Add bindings
+            binding_left_padding = right_panel_left_padding + box_padding
+            for col in Bindings.render(bindings_box[1][1] - bindings_box[0][1] - 1):
+                top_bindings_padding_score = bindings_box[0][1]
+                for meta in col:
+                    top_bindings_padding_score += 1
+                    padding, line = list(meta.items())[0]
+
+                    culour.addstr(screen, top_bindings_padding_score, binding_left_padding + padding, line)
+
+            # Compute probabilities for the current circuit
             predictions = list(circuit.predict())
             predicted_idx = predictions.index(max(predictions))
             if predictions.count(predicted_idx) > 1:
@@ -104,8 +123,8 @@ class Game:
                 culour.addstr(screen, top_sheet_padding, left_sheet_padding, line)
 
             # Build circuit graphics line by line
+            left_sheet_padding = box_padding + right_panel_left_padding
             for idx, line in enumerate(circuit.render()):
-                left_sheet_padding = box_padding + right_panel_left_padding
                 top_sheet_padding = box_padding + idx
                 culour.addstr(screen, top_sheet_padding, left_sheet_padding, line)
 

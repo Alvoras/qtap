@@ -3,7 +3,6 @@ from pyfiglet import Figlet
 
 from lib.bar import Bar
 from colorama import Style
-from rich.console import Console
 
 from lib.constants import FRETS_COLOR_MAP
 
@@ -35,7 +34,7 @@ class Sheet:
         self.bpm_delay = 1 / (self.song.bpm / 60)  # Delay in second between each beat (1 second / bpm / seconds in 1 minute)
 
         self.tracks = []
-        for _ in self.bar.tracks_measure:
+        for _ in self.bar.tracks_symbols:
             self.tracks.append([])
 
         self.total_width = 5 + self.qbit_qty + self.bar.total_width + 2

@@ -1,8 +1,9 @@
 from lib.circuit.circuit_grid import CircuitGrid
 from lib.circuit.circuit_grid_model import CircuitGridModel
-from lib.constants import MAX_COLUMNS, NUM_SHOTS
+from lib.constants import MAX_COLUMNS, NUM_SHOTS, FRETS_COLOR_MAP
 from lib.circuit.circuit_node_types import GATE_MAPPING
 import lib.circuit.circuit_node_types as NODE_TYPES
+from colorama import Style
 
 from math import ceil, degrees
 import numpy as np
@@ -12,10 +13,11 @@ from copy import deepcopy
 
 
 class Circuit:
-    def __init__(self, qbit_qty, height=20, width=20):
+    def __init__(self, qbit_qty, bar, height=20, width=20):
         self.height = height
         self.width = width
         self.qbit_qty = qbit_qty
+        self.bar = bar
 
         self.circuit_grid_model = CircuitGridModel(self.qbit_qty, MAX_COLUMNS)
         self.circuit_grid = CircuitGrid(self.qbit_qty, MAX_COLUMNS, self.circuit_grid_model)
@@ -30,6 +32,28 @@ class Circuit:
             lines.append(" " * self.width)
 
         lines += self.make_circuit()
+        lines += self.make_proba()
+        return lines
+
+    def make_proba(self):
+        lines = []
+        probas = self.predict()
+        line = []
+        ref_symbols = []
+
+        for idx, s in enumerate(self.bar.tracks_symbols):
+            color = FRETS_COLOR_MAP[idx]
+            ref_symbols.append(s)  # Needed because of the color chars, not printed but present in the maths
+            line.append(f"{Style.BRIGHT}{color}{s}{Style.RESET_ALL}")
+
+        lines.append("    ".join(line))
+        padding = ((self.width - len("   ".join(ref_symbols))) // 2) - 1
+
+        # lines.append("   ".join(s for s in self.bar.tracks_symbols).center(self.width))
+        lines.append((" " * self.qbit_qty).join(f"{str(int(round(abs(p*100))))}%".ljust(4) for p in probas))
+        lines[0] = f"{' ' * padding}{lines[0]}"
+        lines[1] = f"{' ' * padding}{lines[1]}"
+
         return lines
 
     def make_circuit(self):
@@ -122,9 +146,15 @@ class Circuit:
                 # This is a control-X gate or Toffoli gate
                 # TODO: Handle Toffoli gates more completely
                 if wire > max(node.ctrl_a, node.ctrl_b):
-                    c = GATE_MAPPING[NODE_TYPES.NOT_GATE]
+                    if node.radians != 0:
+                        c = self.render_rotated_gate(node)
+                    else:
+                        c = GATE_MAPPING[NODE_TYPES.NOT_GATE]
                 else:
-                    c = GATE_MAPPING[NODE_TYPES.NOT_GATE]
+                    if node.radians != 0:
+                        c = self.render_rotated_gate(node)
+                    else:
+                        c = GATE_MAPPING[NODE_TYPES.NOT_GATE]
             elif node.radians != 0:
                 c = self.render_rotated_gate(node)
             else:
@@ -154,7 +184,6 @@ class Circuit:
         return c
 
     def predict(self):
-        # print("Want to predict")
         circuit = self.circuit_grid_model.compute_circuit()
 
         backend_sv_sim = BasicAer.get_backend('statevector_simulator')
@@ -163,9 +192,6 @@ class Circuit:
         quantum_state = result_sim.get_statevector(circuit, decimals=3)
 
         return quantum_state
-
-        # for y in range(len(quantum_state)):
-        #     print("Value predicted for " + str(y) + " : " + str(quantum_state[y]))
 
     def measure(self):
         circuit = self.circuit_grid_model.compute_circuit()
