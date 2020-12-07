@@ -17,6 +17,7 @@ show_title_screen()
 
 init()
 menu = Menu()
+game = None
 
 while True:
     try:
@@ -29,11 +30,18 @@ while True:
     try:
         game.start()
     except SheetFinished:
+        game.stop_music()
         show_finish_screen(game)
     except GameLost:
+        game.stop_music()
         show_failure_screen(game)
     except QuitGame:
+        game.stop_music()
         break
+
+if game and game.music_player:
+    game.stop_music()
+    game.music_player.join()
 
 deinit()
 

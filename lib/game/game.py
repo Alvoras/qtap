@@ -1,4 +1,5 @@
 import curses
+import multiprocessing
 from curses import textpad
 
 from lib import culour
@@ -11,7 +12,7 @@ from lib.circuit.circuit import Circuit
 
 import time
 import lib.circuit.input as grid_input
-
+from playsound import playsound
 
 class Game:
     def __init__(self, song):
@@ -22,6 +23,11 @@ class Game:
         self.failure = 0
         self.max_failure = 10
         self.score_step = 1
+        self.music_player = None
+
+    def stop_music(self):
+        if self.music_player:
+            self.music_player.terminate()
 
     def start(self):
         curses.wrapper(self.run)
@@ -122,6 +128,12 @@ class Game:
                             self.failure += 1
 
                     sheet.update_cursor()
+
+                    # Start playing the song
+                    if sheet.steps - sheet.cursor == sheet.padding_height:
+                        self.music_player = multiprocessing.Process(target=playsound, args=(self.song.music_file,))
+                        self.music_player.start()
+
                     self.check_end()
 
                 except SheetFinished:

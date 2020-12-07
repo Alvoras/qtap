@@ -21,7 +21,7 @@ class PlasmaScene(Scene):
             "sblood",
             "banner",
             "banner3",
-            "standard",
+            # "standard",
             "univers"
         ]
         font = choice(fonts)

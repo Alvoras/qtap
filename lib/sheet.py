@@ -28,7 +28,8 @@ class Sheet:
         self.render_buf = []
 
         self.height = height+2
-        self.padding_height = (self.height//4) * 3
+        padding_duration = 5  # seconds
+        self.padding_height = int((self.song.bpm / 60) * padding_duration)
 
         # We're using no fraction (== 4/4)
         self.bpm_delay = 1 / (self.song.bpm / 60)  # Delay in second between each beat (1 second / bpm / seconds in 1 minute)
@@ -133,14 +134,14 @@ class Sheet:
             return self.render_buf
         if not self.demo:
             # Total duration of the countdown screen in frame
-            max_frames = 90
+            max_frames = 55
             # Duration of one count in frame
             get_ready_period = 15
-            # 90/15 = 6 steps in the countdown : 5,4,3,2,1,0
+            # abs(55/15) = 3 steps in the countdown : 3,2,1
 
             half_text_height = 8 // 2
 
-            get_ready_number = Figlet(font="banner").renderText(str(abs(self.get_ready_counter - max_frames)//get_ready_period - 1)).splitlines()
+            get_ready_number = Figlet(font="banner").renderText(str(abs(self.get_ready_counter - max_frames)//get_ready_period)).splitlines()
             if not self.get_ready_done and self.get_ready_counter < max_frames + get_ready_period:
                 if self.get_ready_counter > max_frames - get_ready_period:
                     get_ready_number = Figlet(font="banner").renderText("GO!").splitlines()
@@ -155,7 +156,7 @@ class Sheet:
 
         lines = self.make_tracks()
 
-        lines += (self.bar.render(predicted_idx))
+        lines += self.bar.render(predicted_idx)
 
         self.render_buf = lines
         self.prev_cursor = self.cursor

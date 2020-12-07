@@ -15,7 +15,7 @@ class Song:
             meta = yaml.load(f, Loader=yaml.FullLoader)
             self.author = meta["author"]
             self.name = meta["name"]
-            self.music_file = meta["music_file"]
+            self.music_file = os.path.join(songs_root, meta["music_file"])
             if "sheets" in meta:
                 try:
                     self.sheet_file = meta["sheets"][self.mode]
