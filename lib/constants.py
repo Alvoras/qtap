@@ -26,7 +26,7 @@ class Bindings:
     @staticmethod
     def values():
         return {
-            "Exit": "q",
+            "Quit": "q",
             "Menu": "m",
             "X gate": "x",
             "Y gate": "y",
