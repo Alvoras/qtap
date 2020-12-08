@@ -4,7 +4,7 @@ from curses import textpad
 
 from lib import culour
 from lib.exceptions import BreakMainLoop
-from lib.constants import FPS, Bindings
+from lib.constants import FPS, Bindings, MAX_MISSED, SCORE_STEP
 from lib.game.input import handle_key
 
 from lib.sheet import Sheet, SheetFinished
@@ -22,8 +22,8 @@ class Game:
         self.stop_ts = 0
         self.score = 0
         self.missed = 0
-        self.max_missed = 10
-        self.score_step = 1
+        self.max_missed = MAX_MISSED
+        self.score_step = SCORE_STEP
         self.music_player = None
         self.last_measured = ""
 
@@ -60,7 +60,7 @@ class Game:
         #                  - - - - - -
         #                  - - - - - x <- bot_x, bot_y
 
-        sheet_box = [[2, 1],
+        sheet_box = [[box_padding, 1],
                      [screen_width // 3 - (box_padding - 1), screen_height - box_padding]]  # [[top_x, top_y], [bot_x, bot_y]]
 
         circuit_box = [[right_panel_left_padding, 1],

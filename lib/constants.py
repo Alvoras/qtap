@@ -21,6 +21,8 @@ FPS = 30
 
 NUM_SHOTS = 100
 
+MAX_MISSED = 10
+SCORE_STEP = 1
 
 class Bindings:
     @staticmethod
