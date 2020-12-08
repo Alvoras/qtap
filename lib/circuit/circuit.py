@@ -146,10 +146,10 @@ class Circuit:
 
         return lines
 
-    def render_rotated_gate(self, node):
-        c = GATE_MAPPING[node.node_type]
+    def render_rotated_gate(self, rads, node_type):
+        c = GATE_MAPPING[node_type]
         c += " "
-        deg = int(degrees(node.radians % (2 * np.pi)))
+        deg = int(degrees(rads % (2 * np.pi)))
         if deg < 90:
             c += "◯"
         elif 90 <= deg < 180:
@@ -176,26 +176,26 @@ class Circuit:
                 # TODO: Handle Toffoli gates more completely
                 if wire > max(node.ctrl_a, node.ctrl_b):
                     if node.radians != 0:
-                        c = self.render_rotated_gate(node)
+                        c = self.render_rotated_gate(node.radians, NODE_TYPES.NOT_GATE)
                     else:
                         c = GATE_MAPPING[NODE_TYPES.NOT_GATE]
                 else:
                     if node.radians != 0:
-                        c = self.render_rotated_gate(node)
+                        c = self.render_rotated_gate(node.radians, NODE_TYPES.NOT_GATE)
                     else:
                         c = GATE_MAPPING[NODE_TYPES.NOT_GATE]
             elif node.radians != 0:
-                c = self.render_rotated_gate(node)
+                c = self.render_rotated_gate(node.radians, node.node_type)
             else:
                 c = GATE_MAPPING[NODE_TYPES.X]
         elif computed_type == NODE_TYPES.Y:
             if node.radians != 0:
-                c = self.render_rotated_gate(node)
+                c = self.render_rotated_gate(node.radians, node.node_type)
             else:
                 c = GATE_MAPPING[node.node_type]
         elif computed_type == NODE_TYPES.Z:
             if node.radians != 0:
-                c = self.render_rotated_gate(node)
+                c = self.render_rotated_gate(node.radians, node.node_type)
             else:
                 c = GATE_MAPPING[node.node_type]
         elif computed_type == NODE_TYPES.CTRL:
