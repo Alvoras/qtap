@@ -10,13 +10,13 @@ parser.add_argument("-t", "--tick", default=5, type=int, dest="tick", help="Seco
 args = parser.parse_args()
 
 tracks = []
-track_len = int(round((args.bpm/60) * args.duration))
+track_len = round((args.bpm/60) * args.duration)
 
 track_qty = pow(2, args.qbit)
 symbols = ["{0:b}".format(n).zfill(args.qbit) for n in range(track_qty)]
-tick_delay = args.duration // args.tick
+tick_delay = round(args.tick * (args.bpm/60))
 
-for i in range(track_len):
+for i in range(1, track_len):
     line = ["-"*args.qbit]*len(symbols)
 
     if i % tick_delay == 0:  # Add a symbol every $tick_delay
