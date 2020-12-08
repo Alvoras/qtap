@@ -1,0 +1,9 @@
+---
+name: Training
+author: Qtap
+music_file: _
+sheets:
+    easy: training.qtap2
+    hard: training.qtap3
+bpm: 60
+miss: false

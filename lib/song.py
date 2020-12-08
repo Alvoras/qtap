@@ -31,6 +31,8 @@ class Song:
             if not os.path.exists(self.sheet_file):
                 raise MissingSongSheet(f"Missing sheet path ({self.sheet_file})")
 
+            self.miss = meta.get("miss", True)
+
             self.bpm = meta["bpm"]
             max_len = max(width, height)
             self.cover_width = max_len + 1

@@ -17,9 +17,11 @@ show_title_screen()
 
 init()
 menu = Menu()
-game = None
 
 while True:
+    game = None
+    menu.songs = []
+
     try:
         menu.start()
     except SongSelected as song_exc:

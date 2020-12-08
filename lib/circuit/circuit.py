@@ -1,8 +1,8 @@
-from lib.circuit.circuit_grid import CircuitGrid
-from lib.circuit.circuit_grid_model import CircuitGridModel
+from lib.circuit.grid import CircuitGrid
+from lib.circuit.grid_model import CircuitGridModel
 from lib.constants import MAX_COLUMNS, NUM_SHOTS, FRETS_COLOR_MAP
-from lib.circuit.circuit_node_types import GATE_MAPPING
-import lib.circuit.circuit_node_types as NODE_TYPES
+from lib.circuit.node_types import GATE_MAPPING
+import lib.circuit.node_types as NODE_TYPES
 from colorama import Style
 
 from math import ceil, degrees

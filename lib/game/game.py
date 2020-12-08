@@ -21,8 +21,8 @@ class Game:
         self.start_ts = time.time()
         self.stop_ts = 0
         self.score = 0
-        self.failure = 0
-        self.max_failure = 10
+        self.missed = 0
+        self.max_missed = 10
         self.score_step = 1
         self.music_player = None
 
@@ -107,9 +107,10 @@ class Game:
                     culour.addstr(screen, top_bindings_padding_score, binding_left_padding + padding, line)
 
             # Compute probabilities for the current circuit
-            predictions = list(circuit.predict())
-            predicted_idx = predictions.index(max(predictions))
-            if predictions.count(predicted_idx) > 1:
+            predictions = [int(round(abs(p))) for p in list(circuit.predict())]
+            highest_proba = max(predictions)
+            predicted_idx = predictions.index(highest_proba)
+            if predictions.count(highest_proba) > 1:
                 predicted_idx = -1
 
             # Build sheet graphics line by line
@@ -144,7 +145,7 @@ class Game:
                         if sheet.compare(measured):
                             self.score += self.score_step
                         else:
-                            self.failure += 1
+                            self.missed += 1
 
                     sheet.update_cursor()
 
@@ -160,7 +161,7 @@ class Game:
                     raise
 
     def check_end(self):
-        if self.failure >= self.max_failure:
+        if self.song.miss and self.missed >= self.max_missed:
             raise GameLost(self)
 
 

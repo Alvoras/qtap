@@ -16,8 +16,8 @@
 #
 import numpy as np
 
-from lib.circuit import circuit_node_types as node_types
-from lib.circuit.circuit_grid_model import CircuitGridNode
+from lib.circuit import node_types as node_types
+from lib.circuit.grid_model import CircuitGridNode
 from lib.constants import MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT
 
 

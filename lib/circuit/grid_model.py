@@ -1,6 +1,6 @@
 import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
-import lib.circuit.circuit_node_types as node_types
+import lib.circuit.node_types as node_types
 
 
 class CircuitGridModel:
