@@ -1,7 +1,7 @@
 ---
-name: Doom
-author: MBR
-music_file: doom.mp3
+name: I Am AI 
+author: AIVA
+music_file: i_am_ai.mp3
 sheets:
     easy:
         2: easy.qtap2
@@ -9,5 +9,5 @@ sheets:
     hard:
         2: hard.qtap2
         3: hard.qtap3
-bpm: 230
-cover: cover.png
+bpm: 125
+cover: cover.webp

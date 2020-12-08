@@ -1,7 +1,7 @@
 ---
-name: Doom
-author: MBR
-music_file: doom.mp3
+name: Throuh Time and Space
+author: AIVA
+music_file: through_time_and_space.mp3
 sheets:
     easy:
         2: easy.qtap2
@@ -9,5 +9,5 @@ sheets:
     hard:
         2: hard.qtap2
         3: hard.qtap3
-bpm: 230
-cover: cover.png
+bpm: 105
+cover: cover.webp
