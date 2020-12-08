@@ -2,3 +2,5 @@ venv
 *.pyc
 .idea
 lab
+*.asciinema
+scripts/out
