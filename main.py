@@ -7,7 +7,7 @@ from lib.screens.failure_screen import show_failure_screen
 from lib.sheet import SheetFinished
 from colorama import init, deinit
 
-from lib.menu import Menu,SongSelected
+from lib.menu import Menu,SelectedSong
 from lib.screens.title_screen import show_title_screen
 from lib.screens.finish_screen import show_finish_screen
 
@@ -24,7 +24,7 @@ while True:
 
     try:
         menu.start()
-    except SongSelected as song_exc:
+    except SelectedSong as song_exc:
         game = Game(song_exc.get_song())
     except QuitGame:
         break
