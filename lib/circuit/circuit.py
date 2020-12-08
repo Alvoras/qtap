@@ -37,20 +37,43 @@ class Circuit:
 
     def make_proba(self):
         lines = []
-        probas = self.predict()
+        probas = [int(round(abs(p*100))) for p in self.predict()]
         line = []
         ref_symbols = []
 
         for idx, s in enumerate(self.bar.tracks_symbols):
             color = FRETS_COLOR_MAP[idx]
             ref_symbols.append(s)  # Needed because of the color chars, not printed but present in the maths
-            line.append(f"{Style.BRIGHT}{color}{s}{Style.RESET_ALL}")
+            symbol_proba = probas[idx]
+            proba_bar = " "
 
-        lines.append("    ".join(line))
+            # raise Exception(symbol_proba, proba_bar)
+            if 10 <= symbol_proba < 20:
+                proba_bar = "▁"
+            elif 20 <= symbol_proba < 30:
+                proba_bar = "▂"
+            elif 30 <= symbol_proba < 40:
+                proba_bar = "▃"
+            elif 40 <= symbol_proba < 50:
+                proba_bar = "▄"
+            elif 50 <= symbol_proba < 60:
+                proba_bar = "▅"
+            elif 60 <= symbol_proba < 70:
+                proba_bar = "▆"
+            elif 70 <= symbol_proba < 80:
+                proba_bar = "▇"
+            elif 80 <= symbol_proba < 90:
+                proba_bar = "█"
+            elif symbol_proba >= 90:
+                proba_bar = "▉"
+
+            line.append(f"{Style.BRIGHT}{color}{s} {proba_bar}{Style.RESET_ALL}")
+
+        lines.append("  ".join(line))
         padding = ((self.width - len("   ".join(ref_symbols))) // 2) - 1
 
         # lines.append("   ".join(s for s in self.bar.tracks_symbols).center(self.width))
-        lines.append((" " * self.qbit_qty).join(f"{str(int(round(abs(p*100))))}%".ljust(4) for p in probas))
+        lines.append((" " * self.qbit_qty).join(f"{str(p)}%".ljust(4) for p in probas))
         lines[0] = f"{' ' * padding}{lines[0]}"
         lines[1] = f"{' ' * padding}{lines[1]}"
 

@@ -8,7 +8,7 @@ from lib.exceptions import MissingSongParam, UnsupportedDifficultyMode, MissingS
 
 
 class Song:
-    def __init__(self, meta_file, mode, songs_root, width):
+    def __init__(self, meta_file, mode, songs_root, width, height):
         self.cover = None
         self.mode = mode
         with open(meta_file) as f:
@@ -32,12 +32,24 @@ class Song:
                 raise MissingSongSheet(f"Missing sheet path ({self.sheet_file})")
 
             self.bpm = meta["bpm"]
-            self.cover_path = os.path.join(songs_root, meta.get("cover"))
-            # self.cover_width = ((width // 3) // 2) + 1
-            self.cover_width = ((width // 3) // 2) + 1
+            max_len = max(width, height)
+            self.cover_width = max_len + 1
+            # raise Exception(self.cover_width)
 
-            if self.cover_path:
-                try:
-                    self.cover = asciify.to_ascii(self.cover_path, new_width=self.cover_width)
-                except FileNotFoundError:
-                    print("Unable to find image in", self.cover_path)
+            if meta.get("cover"):
+                self.cover_path = os.path.join(songs_root, meta.get("cover"))
+                # self.cover_width = ((width // 3) // 2) + 1
+
+                if self.cover_path:
+                    try:
+                        split_cover = asciify.to_ascii(self.cover_path, new_width=self.cover_width).split()
+                        self.cover = [" ".join(c for c in line) for line in split_cover]
+                    except FileNotFoundError:
+                        # print("Unable to find image in", self.cover_path)
+                        pass
+            else:
+                lines = []
+                for _ in range(self.cover_width):
+                    line = " ".join(c for c in [line for line in ["."]*self.cover_width])
+                    lines.append(line)
+                self.cover = lines

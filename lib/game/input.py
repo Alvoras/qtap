@@ -1,4 +1,4 @@
-from lib.exceptions import BreakMainLoop, QuitGame
+from lib.exceptions import Back, QuitGame
 
 
 def handle_key(key):
@@ -6,4 +6,4 @@ def handle_key(key):
         if key == ord("q"):
             raise QuitGame
         if key == ord("m"):
-            raise BreakMainLoop
+            raise Back

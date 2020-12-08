@@ -16,3 +16,7 @@ class MissingSongSheet(Exception):
 
 class QuitGame(Exception):
     pass
+
+
+class Back(Exception):
+    pass

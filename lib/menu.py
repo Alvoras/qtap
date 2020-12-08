@@ -15,38 +15,39 @@ class Menu:
         self.songs_dir = "./songs"
         self.songs = []
         self.cursor = 0
-
-        self.load_songs()
+        self.song_box_height = 10
+        self.cover_box = 0
+        self.real_cover_box_width = 0
+        self.real_cover_box_height = 0
 
     def load_songs(self):
-        cols, _ = os.get_terminal_size()
-
         for root, dirs, files in os.walk(self.songs_dir):
             for file in files:
                 if file.endswith(".yml"):
                     for mode in ["easy", "hard"]:
                         try:
-                            self.songs.append(Song(os.path.join(root, file), mode, root, cols))
+                            self.songs.append(Song(os.path.join(root, file), mode, root, self.real_cover_box_width, self.real_cover_box_height))
                         except UnsupportedDifficultyMode:
                             continue
                         except MissingSongSheet as e:
-                            print(e)
+                            # print(e)
                             continue
 
     def start(self):
         curses.wrapper(self.run)
 
     def run(self, screen):
-        curses.curs_set(0)
-        screen.keypad(1)
-
         box_padding = 2
-        song_box_height = 10
 
         screen_height, screen_width = screen.getmaxyx()
+        term_width, term_height = os.get_terminal_size()
 
         right_panel_left_padding = (screen_width // 3) + 1
         right_panel_right_padding = screen_width - 3
+
+        self.cover_box = right_panel_left_padding - right_panel_right_padding
+        self.real_cover_box_width = ((term_width // 3) + 1) - (term_width - 3)
+        self.real_cover_box_height = screen_height - self.song_box_height - (box_padding*2)
 
         # Starts at 0,0 (top - left) :
         # ===
@@ -59,10 +60,15 @@ class Menu:
                      [screen_width // 3 - (box_padding - 1), screen_height - box_padding]]  # [[top_x, top_y], [bot_x, bot_y]]
 
         cover_box = [[right_panel_left_padding, 1],
-                       [right_panel_right_padding, screen_height - song_box_height]]  # [[top_x, top_y], [bot_x, bot_y]]
+                       [right_panel_right_padding, screen_height - self.song_box_height]]  # [[top_x, top_y], [bot_x, bot_y]]
 
-        song_box = [[right_panel_left_padding, screen_height - song_box_height],
+        song_box = [[right_panel_left_padding, screen_height - self.song_box_height],
                      [right_panel_right_padding, screen_height - box_padding]]  # [[top_x, top_y], [bot_x, bot_y]]
+
+        self.load_songs()
+
+        curses.curs_set(0)
+        screen.keypad(1)
 
         screen.idcok(True)
         # screen.idlok(True)
@@ -84,10 +90,10 @@ class Menu:
             textpad.rectangle(screen, cover_box[0][1], cover_box[0][0], cover_box[1][1], cover_box[1][0])
             textpad.rectangle(screen, song_box[0][1], song_box[0][0], song_box[1][1], song_box[1][0])
 
-            culour.addstr(screen, screen_height - song_box_height, right_panel_left_padding + 1, f' Press "Enter" to select a song ')
+            culour.addstr(screen, screen_height - self.song_box_height, right_panel_left_padding + 1, f' Press "Enter" to select a song ')
 
             for idx, line in enumerate(self.render()):
-                top_sheet_padding = (screen_height - song_box_height) + idx + 1
+                top_sheet_padding = (screen_height - self.song_box_height) + idx + 1
                 culour.addstr(screen, top_sheet_padding, right_panel_left_padding+box_padding, line)
 
             cover = self.get_selected_song_cover()
@@ -108,7 +114,7 @@ class Menu:
                 top_sheet_padding = box_padding + idx
                 culour.addstr(screen, top_sheet_padding, left_sheet_padding, line)
 
-            screen.refresh()
+            # screen.refresh()
 
             key = screen.getch()
 
@@ -151,9 +157,7 @@ class Menu:
         return lines
 
     def get_selected_song_cover(self):
-        lines = self.get_selected_song().cover.splitlines()
-
-        return [" ".join(c for c in line) for line in lines]
+        return self.get_selected_song().cover
 
     def get_selected_song(self):
         return self.songs[self.cursor]

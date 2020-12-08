@@ -134,7 +134,7 @@ class Game:
                 grid_input.handle_input(circuit, key)
                 handle_key(key)
             except BreakMainLoop:
-                break
+                raise
 
             # If the time delta between last loop and now is more than the BPM's delay, then forward the sheet
             if sheet.tick():
@@ -150,8 +150,9 @@ class Game:
 
                     # Start playing the song
                     if sheet.steps - sheet.cursor == sheet.padding_height:
-                        self.music_player = multiprocessing.Process(target=playsound, args=(self.song.music_file,))
-                        self.music_player.start()
+                        if not self.song.music_file.endswith("_"):  # Do not play song if music_file is set to "_"
+                            self.music_player = multiprocessing.Process(target=playsound, args=(self.song.music_file,))
+                            self.music_player.start()
 
                     self.check_end()
 

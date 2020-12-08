@@ -1,7 +1,7 @@
 #!/bin/env python3
 import os
 
-from lib.exceptions import QuitGame
+from lib.exceptions import QuitGame, Back
 from lib.game.game import Game, GameLost
 from lib.screens.failure_screen import show_failure_screen
 from lib.sheet import SheetFinished
@@ -35,6 +35,8 @@ while True:
     except GameLost:
         game.stop_music()
         show_failure_screen(game)
+    except Back:
+        game.stop_music()
     except QuitGame:
         game.stop_music()
         break

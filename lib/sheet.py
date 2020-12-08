@@ -1,3 +1,4 @@
+import sys
 import time
 from pyfiglet import Figlet
 
@@ -16,7 +17,6 @@ class Sheet:
         self.demo = demo
         self.demo_start_ts = None
         self.demo_screen_done = False
-        # self.demo_counter = 0
 
         self.get_ready_done = False
         self.get_ready_counter = -4
@@ -30,8 +30,12 @@ class Sheet:
         padding_duration = 5  # seconds
         self.padding_height = int((self.song.bpm / 60) * padding_duration)
 
+        # Delay in second between each beat (1 second / bpm / seconds in 1 minute)
         # We're using no fraction (== 4/4)
-        self.bpm_delay = 1 / (self.song.bpm / 60)  # Delay in second between each beat (1 second / bpm / seconds in 1 minute)
+        self.infinite = False
+        self.bpm_delay = 1 / (self.song.bpm / 60) if self.song.bpm > 0 else -1
+        if self.bpm_delay <= 0:
+            self.infinite = True
 
         self.tracks = []
         for _ in self.bar.tracks_symbols:
@@ -80,8 +84,9 @@ class Sheet:
             self.demo_screen_done = False
             self.check_end()
         elif self.get_ready_done:
-            self.cursor -= 1
-            self.check_end()
+            if not self.infinite:
+                self.cursor -= 1
+                self.check_end()
 
     def has_value_to_compare(self):
         empty_symbol = "-"*self.qbit_qty
