@@ -1,4 +1,4 @@
-from colorama import Style
+from colorama import Style, Back
 
 from lib.constants import FRETS_COLOR_MAP
 
@@ -18,15 +18,18 @@ class Bar:
 
         return frets
 
-    def make_track_ref(self):
+    def make_track_ref(self, last_measured):
         track_ref = []
         for idx in range(self.tracks_qty):
             color = FRETS_COLOR_MAP[idx]
-            track_ref.append(f"{Style.BRIGHT}{color}{self.tracks_symbols[idx]}{Style.RESET_ALL} ")
+            if self.tracks_symbols[idx] == last_measured:
+                track_ref.append(f"{Back.WHITE}{Style.BRIGHT}{color}{self.tracks_symbols[idx]}{Style.RESET_ALL}")
+            else:
+                track_ref.append(f"{Style.BRIGHT}{color}{self.tracks_symbols[idx]}{Style.RESET_ALL}")
 
         return track_ref
 
-    def render(self, predicted_idx):
+    def render(self, last_measured, predicted_idx):
         if predicted_idx is None:
             predicted = "░░░░"
         else:
@@ -38,6 +41,6 @@ class Bar:
             predicted = f"{Style.BRIGHT}{predicted_color}{predicted.center(4)}{Style.RESET_ALL}"
 
         lines = [f"┌────{' ' * self.qbit_qty}{''.join(self.make_frets())}┐",
-                 f"│{predicted}{' ' * self.qbit_qty}{''.join(self.make_track_ref())}│"]
+                 f"│{predicted}{' ' * self.qbit_qty}{' '.join(self.make_track_ref(last_measured))} │"]
 
         return lines

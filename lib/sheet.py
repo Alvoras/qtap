@@ -134,7 +134,7 @@ class Sheet:
         lines.reverse()
         return lines
 
-    def render(self, predicted_idx=None):
+    def render(self, last_measured="", predicted_idx=None):
         if self.cursor == self.prev_cursor:
             return self.render_buf
         if not self.demo:
@@ -153,7 +153,7 @@ class Sheet:
                 if self.get_ready_counter > max_frames:
                     self.get_ready_done = True
 
-                for i in range((self.height//2) - half_text_height):
+                for i in range((self.height // 2) - half_text_height):
                     get_ready_number.insert(0, "")
 
                 self.get_ready_counter += 1
@@ -161,7 +161,7 @@ class Sheet:
 
         lines = self.make_tracks()
 
-        lines += self.bar.render(predicted_idx)
+        lines += self.bar.render(last_measured, predicted_idx)
 
         self.render_buf = lines
         self.prev_cursor = self.cursor

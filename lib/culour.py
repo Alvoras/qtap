@@ -1,54 +1,62 @@
 import os
 import curses
-import sys
 
 COLOR_PAIRS_CACHE = {}
 
 
-class TerminalColors(object):
+class TerminalBgColors(object):
+    pass
+    # BLACK = '[40'
+    # WHITE = "[47"
+    # DEFAULT = "[49"
+
+
+class TerminalFgColors(object):
     MAGENTA = '[95'
     LIGHT_MAGENTA = '[35'
-    BOLD_LIGHT_MAGENTA = '[1;35'
     LIGHT_BLUE = '[34'
-    BOLD_LIGHT_BLUE = '[1;34'
     BLUE = '[94'
     LIGHT_GREEN = '[32'
-    BOLD_LIGHT_GREEN = '[1;32'
     GREEN = '[92'
     LIGHT_YELLOW = '[33'
-    BOLD_LIGHT_YELLOW = '[1;33'
     YELLOW = '[93'
     LIGHT_RED = '[31'
-    BOLD_LIGHT_RED = '[1;31'
     RED = '[91'
     END = '[0'
 
 
 # Translates between the terminal notation of a color, to it's curses color number
-TERMINAL_COLOR_TO_CURSES = {
-    TerminalColors.RED: curses.COLOR_RED,
-    TerminalColors.LIGHT_RED: curses.COLOR_RED,
-    TerminalColors.BOLD_LIGHT_RED: curses.COLOR_RED,
-    TerminalColors.GREEN: curses.COLOR_GREEN,
-    TerminalColors.LIGHT_GREEN: curses.COLOR_GREEN,
-    TerminalColors.BOLD_LIGHT_GREEN: curses.COLOR_GREEN,
-    TerminalColors.YELLOW: curses.COLOR_YELLOW,
-    TerminalColors.LIGHT_YELLOW: curses.COLOR_YELLOW,
-    TerminalColors.BOLD_LIGHT_YELLOW: curses.COLOR_YELLOW,
-    TerminalColors.BLUE: curses.COLOR_BLUE,
-    TerminalColors.LIGHT_BLUE: curses.COLOR_BLUE,
-    TerminalColors.BOLD_LIGHT_BLUE: curses.COLOR_BLUE,
-    TerminalColors.MAGENTA: curses.COLOR_MAGENTA,
-    TerminalColors.LIGHT_MAGENTA: curses.COLOR_MAGENTA,
-    TerminalColors.BOLD_LIGHT_MAGENTA: curses.COLOR_MAGENTA
+TERMINAL_FG_COLOR_TO_CURSES = {
+    TerminalFgColors.RED: curses.COLOR_RED,
+    TerminalFgColors.LIGHT_RED: curses.COLOR_RED,
+    TerminalFgColors.GREEN: curses.COLOR_GREEN,
+    TerminalFgColors.LIGHT_GREEN: curses.COLOR_GREEN,
+    TerminalFgColors.YELLOW: curses.COLOR_YELLOW,
+    TerminalFgColors.LIGHT_YELLOW: curses.COLOR_YELLOW,
+    TerminalFgColors.BLUE: curses.COLOR_BLUE,
+    TerminalFgColors.LIGHT_BLUE: curses.COLOR_BLUE,
+    TerminalFgColors.MAGENTA: curses.COLOR_MAGENTA,
+    TerminalFgColors.LIGHT_MAGENTA: curses.COLOR_MAGENTA
+}
+
+
+TERMINAL_BG_COLOR_TO_CURSES = {
+    # TerminalBgColors.BLACK: curses.COLOR_BLACK,
+    # TerminalBgColors.DEFAULT: curses.COLOR_BLACK,
+    # TerminalBgColors.WHITE: curses.COLOR_WHITE
 }
 
 
 class TerminalAttributes(object):
     BOLD = "[1"
+    REVERSE = "[47"  # Ugly hack to change to a white background without handling backgrounds
+    DEFAULT = "[49"  # Ugly hack to change to a white background without handling backgrounds
+
 
 TERMINAL_ATTRIBUTES_TO_CURSES = {
-    TerminalAttributes.BOLD: curses.A_BOLD
+    TerminalAttributes.BOLD: curses.A_BOLD,
+    TerminalAttributes.REVERSE: curses.A_REVERSE,
+    TerminalAttributes.DEFAULT: curses.A_NORMAL
 }
 
 
@@ -68,11 +76,11 @@ def _parse_attr(color):
 
 
 def _color_str_to_color_pair(color):
-    if color == TerminalColors.END:
-        fg = curses.COLOR_WHITE
-    else:
-        fg = TERMINAL_COLOR_TO_CURSES[color]
-    color_pair = _get_color(fg, curses.COLOR_BLACK)
+    bg = TERMINAL_BG_COLOR_TO_CURSES.get(color, curses.COLOR_BLACK)
+    if bg != curses.COLOR_BLACK:
+        raise Exception(color)
+    fg = TERMINAL_FG_COLOR_TO_CURSES.get(color, curses.COLOR_WHITE)
+    color_pair = _get_color(fg, bg)
 
     return color_pair
 
@@ -97,9 +105,12 @@ def _add_line(y, x, window, line):
             full_attr |= attr
             continue
 
+
+
         substring = substring[len(color_str)+1:]
         color_pair = _color_str_to_color_pair(color_str)
         window.addstr(y, x, substring, curses.color_pair(color_pair) | full_attr)
+        full_attr = 0
         x += len(substring)
 
 

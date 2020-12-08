@@ -25,6 +25,7 @@ class Game:
         self.max_missed = 10
         self.score_step = 1
         self.music_player = None
+        self.last_measured = ""
 
     def stop_music(self):
         if self.music_player:
@@ -114,7 +115,7 @@ class Game:
                 predicted_idx = -1
 
             # Build sheet graphics line by line
-            for idx, line in enumerate(sheet.render(predicted_idx)):
+            for idx, line in enumerate(sheet.render(self.last_measured, predicted_idx)):
                 if sheet.get_ready_done:
                     left_sheet_padding = (box_padding * 2 + ((screen_height - box_padding) - sheet.total_width) // 2) + 1
                 else:
@@ -122,6 +123,8 @@ class Game:
 
                 top_sheet_padding = box_padding + idx
                 culour.addstr(screen, top_sheet_padding, left_sheet_padding, line)
+
+            self.last_measured = ""
 
             # Build circuit graphics line by line
             left_sheet_padding = box_padding + right_panel_left_padding
@@ -142,6 +145,7 @@ class Game:
                 try:
                     if sheet.has_value_to_compare():
                         measured = circuit.measure()
+                        self.last_measured = measured
                         if sheet.compare(measured):
                             self.score += self.score_step
                         else:
