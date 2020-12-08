@@ -68,7 +68,6 @@ class Menu:
                      [right_panel_right_padding, screen_height - self.box_padding]]  # [[top_x, top_y], [bot_x, bot_y]]
 
         self.load_songs()
-        self.load_songs()
 
         curses.curs_set(0)
         screen.keypad(1)
