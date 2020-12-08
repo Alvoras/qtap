@@ -95,7 +95,9 @@ class Game:
             top_sheet_padding_score = screen_height - (score_box_height + bindings_box_height) + 1
             culour.addstr(screen, top_sheet_padding_score - 1, right_panel_left_padding + box_padding, song_author_str)
             culour.addstr(screen, top_sheet_padding_score, right_panel_left_padding + box_padding,
-                          "Score : " + str(self.score))
+                          f"Score : {str(self.score)}")
+            culour.addstr(screen, top_sheet_padding_score + 1, right_panel_left_padding + box_padding,
+                          f"Missed : {self.missed}/{str(self.max_missed)}")
 
             # Add bindings
             binding_left_padding = right_panel_left_padding + box_padding
@@ -124,13 +126,13 @@ class Game:
                 top_sheet_padding = box_padding + idx
                 culour.addstr(screen, top_sheet_padding, left_sheet_padding, line)
 
-            self.last_measured = ""
-
             # Build circuit graphics line by line
             left_sheet_padding = box_padding + right_panel_left_padding
-            for idx, line in enumerate(circuit.render()):
+            for idx, line in enumerate(circuit.render(self.last_measured)):
                 top_sheet_padding = box_padding + idx
                 culour.addstr(screen, top_sheet_padding, left_sheet_padding, line)
+
+            self.last_measured = ""
 
             key = screen.getch()
 

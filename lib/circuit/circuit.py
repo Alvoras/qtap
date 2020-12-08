@@ -3,7 +3,7 @@ from lib.circuit.grid_model import CircuitGridModel
 from lib.constants import MAX_COLUMNS, NUM_SHOTS, FRETS_COLOR_MAP
 from lib.circuit.node_types import GATE_MAPPING
 import lib.circuit.node_types as NODE_TYPES
-from colorama import Style
+from colorama import Style, Back
 
 from math import ceil, degrees
 import numpy as np
@@ -25,25 +25,28 @@ class Circuit:
         self.grid_delta = 4
         self.y_padding = (self.height - (self.grid_delta * self.qbit_qty)) // 2
 
-    def render(self):
+    def render(self, last_measured=""):
         lines = []
 
         for i in range(self.y_padding):
             lines.append(" " * self.width)
 
         lines += self.make_circuit()
-        lines += self.make_proba()
+        lines += self.make_proba(last_measured)
         return lines
 
-    def make_proba(self):
+    def make_proba(self, last_measured):
         lines = []
         probas = [int(round(abs(p*100))) for p in self.predict()]
         line = []
         ref_symbols = []
 
         for idx, s in enumerate(self.bar.tracks_symbols):
+            # Needed because of the color chars, not printed but present in the math
+            # Used to calculate padding for centering
+            ref_symbols.append(s)
+
             color = FRETS_COLOR_MAP[idx]
-            ref_symbols.append(s)  # Needed because of the color chars, not printed but present in the maths
             symbol_proba = probas[idx]
             proba_bar = " "
 
@@ -67,7 +70,10 @@ class Circuit:
             elif symbol_proba >= 90:
                 proba_bar = "▉"
 
-            line.append(f"{Style.BRIGHT}{color}{s} {proba_bar}{Style.RESET_ALL}")
+            if symbol_proba == last_measured:
+                line.append(f"{Back.WHITE}{Style.BRIGHT}{color}{s} {proba_bar}{Style.RESET_ALL}")
+            else:
+                line.append(f"{Style.BRIGHT}{color}{s} {proba_bar}{Style.RESET_ALL}")
 
         lines.append("  ".join(line))
         padding = ((self.width - len("   ".join(ref_symbols))) // 2) - 1
