@@ -26,15 +26,16 @@ class Menu:
     def load_songs(self):
         for root, dirs, files in os.walk(self.songs_dir):
             for file in files:
-                if file.endswith(".yml"):
+                if file == "meta.yml":
                     for mode in ["easy", "hard"]:
-                        try:
-                            self.songs.append(Song(os.path.join(root, file), mode, root, self.real_cover_box_width, self.real_cover_box_height))
-                        except UnsupportedDifficultyMode:
-                            continue
-                        except MissingSongSheet as e:
-                            # print(e)
-                            continue
+                        for qbit_qty in [2, 3]:
+                            try:
+                                self.songs.append(Song(os.path.join(root, file), mode, qbit_qty, root, self.real_cover_box_width, self.real_cover_box_height))
+                            except UnsupportedDifficultyMode:
+                                continue
+                            except MissingSongSheet as e:
+                                # print(e)
+                                continue
 
     def start(self):
         curses.wrapper(self.run)
@@ -152,17 +153,16 @@ class Menu:
             dot = f"{Fore.GREEN}●{Style.RESET_ALL}" if song.mode == "easy" else f"{Fore.YELLOW}●{Style.RESET_ALL}"
 
             if idx == screen_cursor:
-                songs_list.append(f"[{dot} {song.name}]")
+                songs_list.append(f"[{dot} {song.name} ({str(song.qbit_qty)}, {song.mode})]")
             else:
-                songs_list.append(f" {dot} {song.name}")
+                songs_list.append(f" {dot} {song.name} ({str(song.qbit_qty)}, {song.mode})")
 
         return songs_list
 
     def render_selected_song_meta(self):
         song = self.get_selected_song()
         difficulty = f"{Fore.GREEN}{song.mode}{Style.RESET_ALL}" if song.mode == "easy" else f"{Fore.YELLOW}{song.mode}{Style.RESET_ALL}"
-        qbit_qty = "2" if song.mode == "easy" else "3"
-        lines = [f"Name : {song.name}", f"Author : {song.author}", f"BPM : {song.bpm}", f"Difficulty : {difficulty}", f"Qbits: {qbit_qty}"]
+        lines = [f"Name : {song.name}", f"Author : {song.author}", f"BPM : {song.bpm}", f"Difficulty : {difficulty}", f"Qbits: {str(song.qbit_qty)}"]
 
         return lines
 

@@ -3,7 +3,8 @@ name: Circuit design
 author: Qtap
 music_file: _
 sheets:
-    easy: cm.qtap2
-    hard: cm.qtap3
+    easy:
+        2: cm.qtap2
+        3: cm.qtap3
 bpm: 0
 cover: cover.png

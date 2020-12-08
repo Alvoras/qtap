@@ -6,7 +6,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-b", "--bpm", required=True, type=int, dest="bpm", help="BPM")
 parser.add_argument("-d", "--duration", required=True, type=int, dest="duration", help="Duration (seconds)")
 parser.add_argument("-q", "--qbit", default=2, type=int, dest="qbit", choices=[2, 3], help="Qbit quantity")
-parser.add_argument("-t", "--tick", default=5, type=int, dest="tick", help="Seconds between each symbol")
+parser.add_argument("-t", "--tick", default=5, type=float, dest="tick", help="Seconds between each symbol")
 args = parser.parse_args()
 
 tracks = []

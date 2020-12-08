@@ -3,7 +3,11 @@ name: Doom
 author: MBR
 music_file: doom.mp3
 sheets:
-    easy: doom.qtap2
-    hard: doom.qtap3
+    easy:
+        2: doom_easy.qtap2
+        3: doom_easy.qtap3
+    hard:
+        2: doom_hard.qtap2
+        3: doom_hard.qtap3
 bpm: 230
 cover: cover.png

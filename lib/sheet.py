@@ -21,7 +21,8 @@ class Sheet:
         self.get_ready_done = False
         self.get_ready_counter = -4
 
-        self.qbit_qty = 2 if self.song.mode == "easy" else 3
+        # self.qbit_qty = 2 if self.song.mode == "easy" else 3
+        self.qbit_qty = int(self.song.qbit_qty)
         self.bar = Bar(self.qbit_qty)
 
         self.render_buf = []

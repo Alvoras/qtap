@@ -8,9 +8,10 @@ from lib.exceptions import MissingSongParam, UnsupportedDifficultyMode, MissingS
 
 
 class Song:
-    def __init__(self, meta_file, mode, songs_root, width, height):
+    def __init__(self, meta_file, mode, qbit_qty, songs_root, width, height):
         self.cover = None
         self.mode = mode
+        self.qbit_qty = qbit_qty
         with open(meta_file) as f:
             meta = yaml.load(f, Loader=yaml.FullLoader)
             self.author = meta["author"]
@@ -18,7 +19,7 @@ class Song:
             self.music_file = os.path.join(songs_root, meta["music_file"])
             if "sheets" in meta:
                 try:
-                    self.sheet_file = meta["sheets"][self.mode]
+                    self.sheet_file = meta["sheets"][self.mode][self.qbit_qty]
                 except KeyError:
                     raise UnsupportedDifficultyMode
 
