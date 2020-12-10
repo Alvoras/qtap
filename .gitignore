@@ -4,3 +4,4 @@ venv
 lab
 *.asciinema
 scripts/out
+scripts/*.qtap*
