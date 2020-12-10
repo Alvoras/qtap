@@ -148,7 +148,7 @@ class Game:
             if sheet.tick():
                 try:
                     if sheet.has_value_to_compare():
-                        measured = circuit.measure()
+                        measured = circuit.measure(True)
                         self.last_measured = measured
                         if sheet.compare(measured):
                             self.score += self.score_step

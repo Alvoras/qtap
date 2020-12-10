@@ -31,7 +31,11 @@ class Circuit:
         for i in range(self.y_padding):
             lines.append(" " * self.width)
 
-        probas = [int(round(abs(p*100))) for p in self.predict()]
+        measured = self.measure()
+        probas = [0] * self.bar.tracks_qty
+
+        for key, value in measured.items():
+            probas[int(key, 2)] = int(value)
 
         lines += self.make_circuit()
         lines += self.make_proba(last_measured, probas)
@@ -226,7 +230,7 @@ class Circuit:
 
         return quantum_state
 
-    def measure(self):
+    def measure(self, reset=False):
         circuit = self.circuit_grid_model.compute_circuit()
 
         backend_sv_sim = BasicAer.get_backend('qasm_simulator')
@@ -237,6 +241,8 @@ class Circuit:
         job_sim = execute(measure_circuit, backend_sv_sim, shots=NUM_SHOTS)
         result_sim = job_sim.result()
         counts = result_sim.get_counts(circuit)
-        self.circuit_grid_model.reset_circuit()
+
+        if reset:
+            self.circuit_grid_model.reset_circuit()
 
         return counts
