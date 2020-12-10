@@ -44,8 +44,8 @@ GATE_MAPPING = {
     TDG: "TDG",
     SWAP: "SWP",
     IDEN: "#",
-    NOT_GATE: "🜨",
-    CTRL_TOP_WIRE: "⬤",
-    CTRL_BOTTOM_WIRE: "⬤",
-    TRACE: "│"
+    NOT_GATE: chr(128808),
+    CTRL_TOP_WIRE: chr(11044),
+    CTRL_BOTTOM_WIRE: chr(11044),
+    TRACE: chr(9474)
 }
