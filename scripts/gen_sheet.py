@@ -1,25 +1,40 @@
 #!/usr/bin/env python3
 import argparse
 import qrng
+from random import randrange
 
 
 def generate(qbit, out, tick, bpm):
     tracks = []
     track_qty = pow(2, qbit)
     symbols = ["{0:b}".format(n).zfill(qbit) for n in range(track_qty)]
+    working_symbols = ["{0:b}".format(n).zfill(qbit) for n in range(track_qty)]
+    reverse_symbols_mapping = {sym: n for n, sym in enumerate(symbols)}
     tick_delay = round(tick * (bpm/60))
 
     qrng.set_provider_as_IBMQ('')
     qrng.set_backend()
+    step = 2
+    max_symbols_qty = pow(2, qbit)
 
     for i in range(1, track_len):
         line = ["-"*qbit]*len(symbols)
 
         if i % tick_delay == 0:  # Add a symbol every $tick_delay
-            rng = qrng.get_random_int(0, len(line) - 1)
+            symbols_qty = randrange(step, max_symbols_qty+step, step)
 
-            line[rng] = symbols[rng]
+            for _ in range(symbols_qty):
+                try:
+                    rng = qrng.get_random_int(0, len(working_symbols) - 1)
+                except ValueError:
+                    rng = 0
+                print(rng)
+                symbol = working_symbols.pop(rng)
+                print(working_symbols)
+                line[reverse_symbols_mapping[symbol]] = symbol
 
+            working_symbols = ["{0:b}".format(n).zfill(qbit) for n in range(track_qty)]
+            print(line, symbols_qty)
         tracks.append(" ".join(line))
 
     with open(f"{out}.qtap{str(qbit)}", "w") as f:

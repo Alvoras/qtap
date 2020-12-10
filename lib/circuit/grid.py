@@ -44,6 +44,9 @@ class CircuitGrid:
     def get_selected_node_gate_part(self):
         return self.circuit_grid_model.get_node_gate_part(self.selected_wire, self.selected_column)
 
+    def handle_input_r(self):
+        self.circuit_grid_model.reset_circuit()
+
     def handle_input_x(self):
         # Add X gate regardless of whether there is an existing gate
         # circuit_grid_node = CircuitGridNode(node_types.X)

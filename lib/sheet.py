@@ -105,11 +105,19 @@ class Sheet:
         if self.cursor >= len(self.tracks[0]):
             return False
 
-        for i in range(len(self.tracks)):
-            if measured == self.tracks[i][self.cursor]:
-                return True
+        empty_symbol = "-"*self.qbit_qty
 
-        return False
+        target_chunks = [self.tracks[i][self.cursor] for i in range(len(self.tracks))]
+        target_symbol_qty = len(self.tracks) - target_chunks.count(empty_symbol)
+
+        if len(measured) < target_symbol_qty:
+            return False
+
+        sorted_measured_chunks = [sym for sym in dict(sorted(measured.items(), key=lambda item: item[1], reverse=True))]
+        top_measured_chunks = sorted_measured_chunks[:target_symbol_qty]
+        measured_chunks = [s if s in top_measured_chunks else empty_symbol for s in self.bar.tracks_symbols]
+
+        return target_chunks == measured_chunks
 
     def make_tracks(self):
         lines = []
@@ -134,7 +142,7 @@ class Sheet:
         lines.reverse()
         return lines
 
-    def render(self, last_measured="", predicted_idx=None):
+    def render(self, last_measured={}, predicted_idx=None):
         if self.cursor == self.prev_cursor:
             return self.render_buf
         if not self.demo:

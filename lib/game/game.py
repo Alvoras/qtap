@@ -3,7 +3,7 @@ import multiprocessing
 from curses import textpad
 
 from lib import culour
-from lib.exceptions import BreakMainLoop
+from lib.exceptions import BreakMainLoop, CursorMove
 from lib.constants import FPS, Bindings, MAX_MISSED, SCORE_STEP
 from lib.game.input import handle_key
 
@@ -25,7 +25,7 @@ class Game:
         self.max_missed = MAX_MISSED
         self.score_step = SCORE_STEP
         self.music_player = None
-        self.last_measured = ""
+        self.last_measured = {}
 
     def stop_music(self):
         if self.music_player:
@@ -132,7 +132,7 @@ class Game:
                 top_sheet_padding = box_padding + idx
                 culour.addstr(screen, top_sheet_padding, left_sheet_padding, line)
 
-            self.last_measured = ""
+            self.last_measured = {}
 
             key = screen.getch()
 
@@ -141,6 +141,8 @@ class Game:
                 handle_key(key)
             except BreakMainLoop:
                 raise
+            except CursorMove:
+                screen.clear()
 
             # If the time delta between last loop and now is more than the BPM's delay, then forward the sheet
             if sheet.tick():

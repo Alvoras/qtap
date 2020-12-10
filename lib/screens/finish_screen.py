@@ -38,7 +38,7 @@ class ListView(Frame):
 def animate(screen, game):
     score_text = FigletText(f"Score : {game.score}", font='slant')
     song_text = Rainbow(screen, FigletText(game.song.name, font='slant'))
-    failure_text = FigletText(f"Failure : {game.failure}", font='slant')
+    failure_text = FigletText(f"Failure : {game.missed}", font='slant')
     continue_text = FigletText("Press any key to continue", font="term")
 
     scenes = []

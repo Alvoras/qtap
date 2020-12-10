@@ -20,3 +20,6 @@ class QuitGame(Exception):
 
 class Back(Exception):
     pass
+
+class CursorMove(Exception):
+    pass

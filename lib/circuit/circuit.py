@@ -25,19 +25,20 @@ class Circuit:
         self.grid_delta = 4
         self.y_padding = (self.height - (self.grid_delta * self.qbit_qty)) // 2
 
-    def render(self, last_measured=""):
+    def render(self, last_measured={}):
         lines = []
 
         for i in range(self.y_padding):
             lines.append(" " * self.width)
 
+        probas = [int(round(abs(p*100))) for p in self.predict()]
+
         lines += self.make_circuit()
-        lines += self.make_proba(last_measured)
+        lines += self.make_proba(last_measured, probas)
         return lines
 
-    def make_proba(self, last_measured):
+    def make_proba(self, last_measured, probas):
         lines = []
-        probas = [int(round(abs(p*100))) for p in self.predict()]
         line = []
         ref_symbols = []
 
@@ -50,27 +51,30 @@ class Circuit:
             symbol_proba = probas[idx]
             proba_bar = " "
 
-            # raise Exception(symbol_proba, proba_bar)
-            if 10 <= symbol_proba < 20:
-                proba_bar = "▁"
-            elif 20 <= symbol_proba < 30:
-                proba_bar = "▂"
-            elif 30 <= symbol_proba < 40:
-                proba_bar = "▃"
-            elif 40 <= symbol_proba < 50:
-                proba_bar = "▄"
-            elif 50 <= symbol_proba < 60:
-                proba_bar = "▅"
-            elif 60 <= symbol_proba < 70:
-                proba_bar = "▆"
-            elif 70 <= symbol_proba < 80:
-                proba_bar = "▇"
-            elif 80 <= symbol_proba < 90:
-                proba_bar = "█"
-            elif symbol_proba >= 90:
-                proba_bar = "▉"
+            if symbol_proba == 0:
+                s = "-"*self.qbit_qty
+            else:
+                if 10 <= symbol_proba < 20:
+                    proba_bar = "▁"
+                elif 20 <= symbol_proba < 30:
+                    proba_bar = "▂"
+                elif 30 <= symbol_proba < 40:
+                    proba_bar = "▃"
+                elif 40 <= symbol_proba < 50:
+                    proba_bar = "▄"
+                elif 50 <= symbol_proba < 60:
+                    proba_bar = "▅"
+                elif 60 <= symbol_proba < 70:
+                    proba_bar = "▆"
+                elif 70 <= symbol_proba < 80:
+                    proba_bar = "▇"
+                elif 80 <= symbol_proba < 90:
+                    proba_bar = "█"
+                elif symbol_proba >= 90:
+                    proba_bar = "▉"
 
-            if symbol_proba == last_measured:
+            last_measured_keys = list(last_measured.keys())
+            if symbol_proba in last_measured_keys:
                 line.append(f"{Back.WHITE}{Style.BRIGHT}{color}{s} {proba_bar}{Style.RESET_ALL}")
             else:
                 line.append(f"{Style.BRIGHT}{color}{s} {proba_bar}{Style.RESET_ALL}")
@@ -235,4 +239,4 @@ class Circuit:
         counts = result_sim.get_counts(circuit)
         self.circuit_grid_model.reset_circuit()
 
-        return list(counts.keys())[0]
+        return counts
