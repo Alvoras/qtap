@@ -142,7 +142,8 @@ class Game:
             except BreakMainLoop:
                 raise
             except CursorMove:
-                screen.clear()
+                pass
+                #screen.clear()
 
             # If the time delta between last loop and now is more than the BPM's delay, then forward the sheet
             if sheet.tick():
