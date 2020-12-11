@@ -34,7 +34,7 @@ make run
 ### 3 qbits
 ![complex_hadarmard_qtap3](assets/complex_hadarmard_qtap3.png)
 
-### Explore the composition with the Circuit Design mode
+### Explore quantum gates with the Circuit Design mode
 ![circuit_design](assets/circuit_design.png)
 
 #### A few examples
