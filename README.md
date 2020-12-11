@@ -36,8 +36,6 @@ Compose your quantum circuit to match the track's symbols.
 
 ![variations_8](assets/variations_8.png)
 
-## Composition
-
 ## Compatibility
 
 This game has been designed on and for Linux. Although it works on windows, a few bugs are known, such as losing inputs, color disappearing and missing music.
