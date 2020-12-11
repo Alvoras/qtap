@@ -170,7 +170,7 @@ class Circuit:
         return c
 
     def render_gate(self, wire, col):
-        c = "#"
+        c = "▅"
         node = self.circuit_grid_model.get_node(wire, col)
         computed_type = self.circuit_grid_model.get_node_gate_part(wire, col)
 

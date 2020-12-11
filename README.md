@@ -4,9 +4,13 @@ From the [Qpong](https://github.com/HuangJunye/QPong) quantum codebase.
 
 Compose your quantum circuit to match the track's symbols.
 
-## Demo
+## Preview
 
+[demo_full_width](assets/demo_qtap_full_width.png)
 
+[demo_ctrl_gate](assets/demo_qtap_full_ctrl.png)
+
+## Composition
 
 ## Compatibility
 
