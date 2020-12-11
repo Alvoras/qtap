@@ -98,6 +98,7 @@ class Circuit:
         lines = []
         allowed_trace_connectors = [GATE_MAPPING[NODE_TYPES.CTRL_TOP_WIRE],
                                    GATE_MAPPING[NODE_TYPES.CTRL_BOTTOM_WIRE],
+                                   GATE_MAPPING[NODE_TYPES.H],
                                    GATE_MAPPING[NODE_TYPES.NOT_GATE],
                                    GATE_MAPPING[NODE_TYPES.TRACE]]
 
