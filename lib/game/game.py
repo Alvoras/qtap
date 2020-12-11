@@ -7,7 +7,7 @@ from lib.exceptions import BreakMainLoop, CursorMove
 from lib.constants import FPS, Bindings, MAX_MISSED, SCORE_STEP
 from lib.game.input import handle_key
 
-from lib.sheet import Sheet, SheetFinished
+from lib.game.sheet import Sheet, SheetFinished
 from lib.circuit.circuit import Circuit
 
 import time

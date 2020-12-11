@@ -6,8 +6,8 @@ from colorama import Fore, Style
 from lib import culour
 from lib.constants import FPS
 from lib.exceptions import BreakMainLoop, UnsupportedDifficultyMode, MissingSongSheet, QuitGame
-from lib.sheet import Sheet
-from lib.song import Song
+from lib.game.sheet import Sheet
+from lib.game.song import Song
 
 
 class Menu:

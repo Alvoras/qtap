@@ -15,3 +15,5 @@ venv:
 
 install_pip:
 	./venv/bin/pip install -r ./requirements.txt
+	./venv/bin/pip install vext
+	./venv/bin/pip install vext.gi

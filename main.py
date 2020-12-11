@@ -4,10 +4,10 @@ import os
 from lib.exceptions import QuitGame, Back
 from lib.game.game import Game, GameLost
 from lib.screens.failure_screen import show_failure_screen
-from lib.sheet import SheetFinished
+from lib.game.sheet import SheetFinished
 from colorama import init, deinit
 
-from lib.menu import Menu,SelectedSong
+from lib.game.menu import Menu,SelectedSong
 from lib.screens.title_screen import show_title_screen
 from lib.screens.finish_screen import show_finish_screen
 

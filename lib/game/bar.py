@@ -7,7 +7,7 @@ class Bar:
     def __init__(self, qbit_qty):
         self.qbit_qty = qbit_qty
         self.tracks_qty = pow(2, qbit_qty)
-        self.tracks_symbols = ["{0:b}".format(n).zfill(qbit_qty) for n in range(self.tracks_qty)]
+        self.tracks_symbols = [f"{n:b}".zfill(qbit_qty) for n in range(self.tracks_qty)]
         self.total_width = (len(self.tracks_symbols) * qbit_qty) + (qbit_qty-1)
 
     def make_frets(self):

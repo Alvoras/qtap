@@ -72,6 +72,7 @@ def handle_input(circuit, key):
         circuit_grid.handle_input_delete()
         circuit.render()
 
+    # Rotation
     elif key == ord(binds[BIND_ROTATE_RIGHT]):
         circuit_grid.handle_input_rotate(np.pi / ROTATION_INC)
         circuit.render()
@@ -80,6 +81,7 @@ def handle_input(circuit, key):
         circuit_grid.handle_input_rotate(-np.pi / ROTATION_INC)
         circuit.render()
 
+    # Control
     elif key == ord(binds[BIND_CONTROL_GATE]):
         # Add or remove a control
         circuit_grid.handle_input_ctrl()
@@ -94,6 +96,7 @@ def handle_input(circuit, key):
         # Move a control qubit up
         circuit_grid.handle_input_move_ctrl(MOVE_UP)
 
+    # Circuit management
     elif key == ord(binds[BIND_CLEAN_CIRCUIT]):
         # Move a control qubit up
         circuit_grid.handle_input_r()
