@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import qrng
-from random import randrange
+from random import randrange, randint
 
 
 def generate(qbit, out, tick, bpm):
@@ -21,20 +21,20 @@ def generate(qbit, out, tick, bpm):
         line = ["-"*qbit]*len(symbols)
 
         if i % tick_delay == 0:  # Add a symbol every $tick_delay
-            symbols_qty = randrange(step, max_symbols_qty+step, step)
+            if randint(1, 100) < 80:
+                symbols_qty = 1
+            else:
+                symbols_qty = randrange(step, max_symbols_qty+step, step)
 
             for _ in range(symbols_qty):
                 try:
                     rng = qrng.get_random_int(0, len(working_symbols) - 1)
                 except ValueError:
                     rng = 0
-                print(rng)
                 symbol = working_symbols.pop(rng)
-                print(working_symbols)
                 line[reverse_symbols_mapping[symbol]] = symbol
 
-            working_symbols = ["{0:b}".format(n).zfill(qbit) for n in range(track_qty)]
-            print(line, symbols_qty)
+            working_symbols = [f"{n:b}".zfill(qbit) for n in range(track_qty)]
         tracks.append(" ".join(line))
 
     with open(f"{out}.qtap{str(qbit)}", "w") as f:
@@ -55,11 +55,11 @@ track_len = round((args.bpm/60) * args.duration)
 if args.full:
     tick_presets = {
         "easy": {
-            "2": 2,
+            "2": 3,
             "3": 4
         },
         "hard": {
-            "2": 1,
+            "2": 2,
             "3": 2
         }
     }
