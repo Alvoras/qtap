@@ -1,10 +1,9 @@
 import os
 
 import yaml
-from PIL import Image
 
-from lib import asciify
-from lib.exceptions import MissingSongParam, UnsupportedDifficultyMode, MissingSongSheet
+from lib.display import asciify
+from lib.utils.exceptions import MissingSongParam, UnsupportedDifficultyMode, MissingSongSheet
 
 
 class Song:

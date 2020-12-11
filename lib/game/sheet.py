@@ -4,7 +4,7 @@ from pyfiglet import Figlet
 from lib.game.bar import Bar
 from colorama import Style
 
-from lib.constants import FRETS_COLOR_MAP
+from lib.utils.constants import FRETS_COLOR_MAP
 
 
 class Sheet:

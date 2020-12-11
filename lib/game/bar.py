@@ -1,6 +1,6 @@
 from colorama import Style, Back
 
-from lib.constants import FRETS_COLOR_MAP
+from lib.utils.constants import FRETS_COLOR_MAP
 
 
 class Bar:

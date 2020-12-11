@@ -1,8 +1,8 @@
 import curses
-from lib.constants import *
+from lib.utils.constants import *
 import numpy as np
 
-from lib.exceptions import CursorMove
+from lib.utils.exceptions import CursorMove
 
 binds = Bindings.values()
 

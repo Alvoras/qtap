@@ -1,4 +1,4 @@
-from lib.exceptions import Back, QuitGame
+from lib.utils.exceptions import Back, QuitGame
 
 
 def handle_key(key):

@@ -3,9 +3,9 @@ import os
 from curses import textpad
 from colorama import Fore, Style
 
-from lib import culour
-from lib.constants import FPS
-from lib.exceptions import BreakMainLoop, UnsupportedDifficultyMode, MissingSongSheet, QuitGame
+from lib.display import culour
+from lib.utils.constants import FPS
+from lib.utils.exceptions import BreakMainLoop, UnsupportedDifficultyMode, MissingSongSheet, QuitGame
 from lib.game.sheet import Sheet
 from lib.game.song import Song
 
@@ -97,7 +97,7 @@ class Menu:
 
             for idx, line in enumerate(self.render()):
                 top_sheet_padding = (screen_height - self.song_box_height) + idx + 1
-                culour.addstr(screen, top_sheet_padding, right_panel_left_padding+self.box_padding, line)
+                culour.addstr(screen, top_sheet_padding, right_panel_left_padding + self.box_padding, line)
 
             cover = self.get_selected_song_cover()
             if cover:

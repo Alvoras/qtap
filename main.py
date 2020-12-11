@@ -1,7 +1,7 @@
 #!/bin/env python3
 import os
 
-from lib.exceptions import QuitGame, Back
+from lib.utils.exceptions import QuitGame, Back
 from lib.game.game import Game, GameLost
 from lib.screens.failure_screen import show_failure_screen
 from lib.game.sheet import SheetFinished

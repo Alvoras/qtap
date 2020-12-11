@@ -2,9 +2,9 @@ import curses
 import multiprocessing
 from curses import textpad
 
-from lib import culour
-from lib.exceptions import BreakMainLoop, CursorMove
-from lib.constants import FPS, Bindings, MAX_MISSED, SCORE_STEP
+from lib.display import culour
+from lib.utils.exceptions import BreakMainLoop, CursorMove
+from lib.utils.constants import FPS, Bindings, MAX_MISSED, SCORE_STEP
 from lib.game.input import handle_key
 
 from lib.game.sheet import Sheet, SheetFinished
